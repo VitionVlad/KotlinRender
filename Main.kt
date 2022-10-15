@@ -131,7 +131,7 @@ class Window(title: String, size: IVec2, mesh: Array<Vec3>): JFrame(){
 
 fun main(args: Array<String>) {
     var objfile: ObjReader = ObjReader()
-    objfile.path = "/home/vlad/IdeaProjects/KTExperimets/src/main/resources/test.obj"
+    objfile.path = "test.obj"
     objfile.readObj()
     var mesh = objfile.readObj()
     var size = IVec2()
