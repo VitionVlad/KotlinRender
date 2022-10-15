@@ -79,9 +79,9 @@ class Render(size: IVec2, mesh: Array<Vec3>): JPanel(){
     private fun doDrawing(g: Graphics) {
         position.x = +1.5f
         position.y = -2.0f
-        position.z = 20.0f
+        position.z = 10.0f
         val g2d = g as Graphics2D
-        g2d.paint = Color(150, 150, 150)
+        g2d.paint = Color(0, 0, 0)
         val rh = RenderingHints(
             RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON
@@ -89,12 +89,15 @@ class Render(size: IVec2, mesh: Array<Vec3>): JPanel(){
         rh[RenderingHints.KEY_RENDERING] = RenderingHints.VALUE_RENDER_QUALITY
         g2d.setRenderingHints(rh)
 
-        for(i in 0..localmesh.size-2){
+        var i: Int = 0
+        while(i <= localmesh.size-3){
             var vertex = Vec3()
             var vertex2 = Vec3()
+            var vertex3 = Vec3()
             var tanhalffov = 1.0f/tan((120.0f/2)*(PI/180.0f)).toFloat()
 
             vertex2.z = (localmesh[i+1].z + position.z)/100f
+            vertex3.z = (localmesh[i+2].z + position.z)/100f
             vertex.z = (localmesh[i].z + position.z)/100
 
             vertex.x = (localmesh[i].x + position.x)*tanhalffov*(1.0f/(vertex.z*10.0f))
@@ -103,11 +106,18 @@ class Render(size: IVec2, mesh: Array<Vec3>): JPanel(){
             vertex2.x = (localmesh[i+1].x + position.x)*tanhalffov*(1.0f/(vertex2.z*10.0f))
             vertex2.y = (localmesh[i+1].y - position.y)*tanhalffov*(1.0f/(vertex2.z*10.0f))
 
+            vertex3.x = (localmesh[i+2].x + position.x)*tanhalffov*(1.0f/(vertex3.z*10.0f))
+            vertex3.y = (localmesh[i+2].y - position.y)*tanhalffov*(1.0f/(vertex3.z*10.0f))
+
             if(vertex.z in 0.0f..1.0f && vertex2.z in 0.0f..1.0f){
                 var toRender = coordToScreen(vertex, localsize)
-                var toRenderEnd = coordToScreen(vertex2, localsize)
-                g2d.drawLine(toRender.x,  toRender.y, toRenderEnd.x, toRenderEnd.y)
+                var toRender1 = coordToScreen(vertex2, localsize)
+                var toRender2 = coordToScreen(vertex3, localsize)
+                var Mass1: Array<Int> = arrayOf(toRender.x, toRender1.x, toRender2.x)
+                var Mass2: Array<Int> = arrayOf(toRender.y, toRender1.y, toRender2.y)
+                g2d.drawPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
             }
+            i+=3
         }
     }
     public override fun paintComponent(g: Graphics) {
@@ -131,11 +141,12 @@ class Window(title: String, size: IVec2, mesh: Array<Vec3>): JFrame(){
 
 fun main(args: Array<String>) {
     var objfile: ObjReader = ObjReader()
-    objfile.path = "test.obj"
+    objfile.path = "/home/vlad/IdeaProjects/KTExperimets/src/main/resources/test.obj"
     objfile.readObj()
     var mesh = objfile.readObj()
     var size = IVec2()
     size.x = 800
     size.y = 600
+    println(mesh.size)
     var window = Window("Kotlin Render", size, mesh)
 }
