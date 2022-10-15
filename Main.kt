@@ -3,6 +3,8 @@ import java.io.InputStream
 import java.util.Scanner
 import javax.swing.JFrame
 import java.awt.*
+import java.awt.event.KeyEvent
+import java.awt.event.KeyListener
 import javax.swing.JPanel
 import javax.swing.text.Position
 import kotlin.math.PI
@@ -63,31 +65,66 @@ class ObjReader{
     }
 }
 
+var position = Vec3()
+
+var rotation = Vec2()
+
+var speed = 0.002f
+
+class keyWork(): KeyListener{
+    public override fun keyTyped(e: KeyEvent){
+        if(e.keyCode == 87){
+            position.z -= speed
+        }
+        if(e.keyCode == 83){
+            position.z += speed
+        }
+        if(e.keyCode == 65){
+            position.x += speed
+        }
+        if(e.keyCode == 68){
+            position.x -= speed
+        }
+    }
+    public override fun keyPressed(e: KeyEvent){
+        if(e.keyCode == 87){
+            position.z -= speed
+        }
+        if(e.keyCode == 83){
+            position.z += speed
+        }
+        if(e.keyCode == 65){
+            position.x += speed
+        }
+        if(e.keyCode == 68){
+            position.x -= speed
+        }
+    }
+    public override fun keyReleased(e: KeyEvent){}
+}
+
 class Render(size: IVec2, mesh: Array<Vec3>): JPanel(){
     private var localmesh = mesh
     private var localsize = size
-    private var position = Vec3()
     private fun coordToScreen(coord: Vec3, size: IVec2): IVec2{
         var convert = Vec2()
-        convert.x = coord.x*size.x
-        convert.y = coord.y*size.y
+        convert.x = (coord.x*size.x)
+        convert.y = (coord.y*size.y)
         var finale = IVec2()
         finale.x = convert.x.toInt()
         finale.y = convert.y.toInt()
         return finale
     }
     private fun doDrawing(g: Graphics) {
-        position.x = +1.5f
-        position.y = -2.0f
-        position.z = 10.0f
         val g2d = g as Graphics2D
-        g2d.paint = Color(0, 0, 0)
         val rh = RenderingHints(
             RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON
         )
         rh[RenderingHints.KEY_RENDERING] = RenderingHints.VALUE_RENDER_QUALITY
         g2d.setRenderingHints(rh)
+
+        g2d.paint = Color(0, 0, 0)
 
         var i: Int = 0
         while(i <= localmesh.size-3){
@@ -115,15 +152,21 @@ class Render(size: IVec2, mesh: Array<Vec3>): JPanel(){
                 var toRender2 = coordToScreen(vertex3, localsize)
                 var Mass1: Array<Int> = arrayOf(toRender.x, toRender1.x, toRender2.x)
                 var Mass2: Array<Int> = arrayOf(toRender.y, toRender1.y, toRender2.y)
-                g2d.drawPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
+                //g2d.drawPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
+                g2d.fillPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
             }
             i+=3
         }
     }
     public override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
+        super.addKeyListener(keyWork())
+        localsize.x = super.getSize().width
+        localsize.y = super.getSize().height
         super.repaint()
         doDrawing(g)
+        super.setFocusable(true)
+        super.setFocusTraversalKeysEnabled(true)
     }
 }
 
@@ -140,13 +183,15 @@ class Window(title: String, size: IVec2, mesh: Array<Vec3>): JFrame(){
 }
 
 fun main(args: Array<String>) {
+    position.x = +3.0f
+    position.y = -3.5f
+    position.z = 35.0f
     var objfile: ObjReader = ObjReader()
     objfile.path = "/home/vlad/IdeaProjects/KTExperimets/src/main/resources/test.obj"
     objfile.readObj()
     var mesh = objfile.readObj()
     var size = IVec2()
-    size.x = 800
-    size.y = 600
-    println(mesh.size)
+    size.x = 320
+    size.y = 240
     var window = Window("Kotlin Render", size, mesh)
 }
