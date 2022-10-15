@@ -69,7 +69,9 @@ var position = Vec3()
 
 var rotation = Vec2()
 
-var speed = 0.002f
+var speed = 0.00002f
+
+var sensivity = 0.000002f
 
 class keyWork(): KeyListener{
     public override fun keyTyped(e: KeyEvent){
@@ -85,6 +87,19 @@ class keyWork(): KeyListener{
         if(e.keyCode == 68){
             position.x -= speed
         }
+
+        if(e.keyCode == 37){
+            rotation.x += sensivity
+        }
+        if(e.keyCode == 38){
+            rotation.y -= sensivity
+        }
+        if(e.keyCode == 39){
+            rotation.x -= sensivity
+        }
+        if(e.keyCode == 40){
+            rotation.y += sensivity
+        }
     }
     public override fun keyPressed(e: KeyEvent){
         if(e.keyCode == 87){
@@ -98,6 +113,19 @@ class keyWork(): KeyListener{
         }
         if(e.keyCode == 68){
             position.x -= speed
+        }
+
+        if(e.keyCode == 37){
+            rotation.x += sensivity
+        }
+        if(e.keyCode == 38){
+            rotation.y -= sensivity
+        }
+        if(e.keyCode == 39){
+            rotation.x -= sensivity
+        }
+        if(e.keyCode == 40){
+            rotation.y += sensivity
         }
     }
     public override fun keyReleased(e: KeyEvent){}
@@ -137,14 +165,14 @@ class Render(size: IVec2, mesh: Array<Vec3>): JPanel(){
             vertex3.z = (localmesh[i+2].z + position.z)/100f
             vertex.z = (localmesh[i].z + position.z)/100
 
-            vertex.x = (localmesh[i].x + position.x)*tanhalffov*(1.0f/(vertex.z*100.0f))
-            vertex.y = (localmesh[i].y - position.y)*tanhalffov*(1.0f/(vertex.z*100.0f))
+            vertex.x = (localmesh[i].x + position.x)*tanhalffov*(1.0f/(vertex.z*100.0f))*(localsize.x/localsize.y) * cos(rotation.x) + sin(rotation.x)
+            vertex.y = (localmesh[i].y - position.y)*tanhalffov*(1.0f/(vertex.z*100.0f)) * cos(rotation.y) - sin(rotation.y)
 
-            vertex2.x = (localmesh[i+1].x + position.x)*tanhalffov*(1.0f/(vertex2.z*100.0f))
-            vertex2.y = (localmesh[i+1].y - position.y)*tanhalffov*(1.0f/(vertex2.z*100.0f))
+            vertex2.x = (localmesh[i+1].x + position.x)*tanhalffov*(1.0f/(vertex2.z*100.0f))*(localsize.x/localsize.y) * cos(rotation.x) + sin(rotation.x)
+            vertex2.y = (localmesh[i+1].y - position.y)*tanhalffov*(1.0f/(vertex2.z*100.0f)) * cos(rotation.y) - sin(rotation.y)
 
-            vertex3.x = (localmesh[i+2].x + position.x)*tanhalffov*(1.0f/(vertex3.z*100.0f))
-            vertex3.y = (localmesh[i+2].y - position.y)*tanhalffov*(1.0f/(vertex3.z*100.0f))
+            vertex3.x = (localmesh[i+2].x + position.x)*tanhalffov*(1.0f/(vertex3.z*100.0f))*(localsize.x/localsize.y) * cos(rotation.x) + sin(rotation.x)
+            vertex3.y = (localmesh[i+2].y - position.y)*tanhalffov*(1.0f/(vertex3.z*100.0f)) * cos(rotation.y) - sin(rotation.y)
 
             if(vertex.z in 0.0f..1.0f && vertex2.z in 0.0f..1.0f){
                 var toRender = coordToScreen(vertex, localsize)
@@ -185,7 +213,7 @@ class Window(title: String, size: IVec2, mesh: Array<Vec3>): JFrame(){
 fun main(args: Array<String>) {
     position.x = +3.0f
     position.y = -3.5f
-    position.z = 5.0f
+    position.z = 3.0f
     var objfile: ObjReader = ObjReader()
     objfile.path = "/home/vlad/IdeaProjects/KTExperimets/src/main/resources/test.obj"
     objfile.readObj()
