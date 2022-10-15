@@ -137,14 +137,14 @@ class Render(size: IVec2, mesh: Array<Vec3>): JPanel(){
             vertex3.z = (localmesh[i+2].z + position.z)/100f
             vertex.z = (localmesh[i].z + position.z)/100
 
-            vertex.x = (localmesh[i].x + position.x)*tanhalffov*(1.0f/(vertex.z*10.0f))
-            vertex.y = (localmesh[i].y - position.y)*tanhalffov*(1.0f/(vertex.z*10.0f))
+            vertex.x = (localmesh[i].x + position.x)*tanhalffov*(1.0f/(vertex.z*100.0f))
+            vertex.y = (localmesh[i].y - position.y)*tanhalffov*(1.0f/(vertex.z*100.0f))
 
-            vertex2.x = (localmesh[i+1].x + position.x)*tanhalffov*(1.0f/(vertex2.z*10.0f))
-            vertex2.y = (localmesh[i+1].y - position.y)*tanhalffov*(1.0f/(vertex2.z*10.0f))
+            vertex2.x = (localmesh[i+1].x + position.x)*tanhalffov*(1.0f/(vertex2.z*100.0f))
+            vertex2.y = (localmesh[i+1].y - position.y)*tanhalffov*(1.0f/(vertex2.z*100.0f))
 
-            vertex3.x = (localmesh[i+2].x + position.x)*tanhalffov*(1.0f/(vertex3.z*10.0f))
-            vertex3.y = (localmesh[i+2].y - position.y)*tanhalffov*(1.0f/(vertex3.z*10.0f))
+            vertex3.x = (localmesh[i+2].x + position.x)*tanhalffov*(1.0f/(vertex3.z*100.0f))
+            vertex3.y = (localmesh[i+2].y - position.y)*tanhalffov*(1.0f/(vertex3.z*100.0f))
 
             if(vertex.z in 0.0f..1.0f && vertex2.z in 0.0f..1.0f){
                 var toRender = coordToScreen(vertex, localsize)
@@ -185,7 +185,7 @@ class Window(title: String, size: IVec2, mesh: Array<Vec3>): JFrame(){
 fun main(args: Array<String>) {
     position.x = +3.0f
     position.y = -3.5f
-    position.z = 35.0f
+    position.z = 5.0f
     var objfile: ObjReader = ObjReader()
     objfile.path = "/home/vlad/IdeaProjects/KTExperimets/src/main/resources/test.obj"
     objfile.readObj()
