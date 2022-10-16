@@ -268,7 +268,7 @@ class Render(size: IVec2, mesh: Array<Vec3>): JPanel(){
             vertex2 = proj.vecMultiply(vertex2)
             vertex3 = proj.vecMultiply(vertex3)
 
-            proj.makePerspectiveProj(120.0f, 100.0f, 0.1f)
+            proj.makePerspectiveProj(120.0f, 100.0f, 1.0f)
             vertex = proj.vecMultiply(vertex)
             vertex2 = proj.vecMultiply(vertex2)
             vertex3 = proj.vecMultiply(vertex3)
