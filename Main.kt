@@ -93,9 +93,14 @@ class Mat4{
     }
 }
 
+class Mesh{
+    var Geometry: Array<Vec3> = emptyArray()
+    var Normals: Array<Vec3> = emptyArray()
+}
+
 class ObjReader{
     var path: String = "example.obj"
-    fun readObj(): Array<Vec3>{
+    fun readObj(): Mesh{
         val obj: InputStream = File(path).inputStream()
         var scan: Scanner = Scanner(obj)
         var vertline: Int = 1
@@ -128,7 +133,9 @@ class ObjReader{
         for(i in 0..faceline){
             finalvertexlist.add(i, vertexList[faceList[i]])
         }
-        return finalvertexlist.toTypedArray()
+        var Export: Mesh = Mesh()
+        Export.Geometry = finalvertexlist.toTypedArray()
+        return Export
     }
 }
 
@@ -220,7 +227,7 @@ class keyWork(): KeyListener{
     public override fun keyReleased(e: KeyEvent){}
 }
 
-class Render(size: IVec2, mesh: Array<Vec3>): JPanel(){
+class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
     private var localmesh = mesh
     private var localsize = size
     private fun coordToScreen(coord: Vec3, size: IVec2): IVec2{
@@ -243,46 +250,48 @@ class Render(size: IVec2, mesh: Array<Vec3>): JPanel(){
 
         g2d.paint = Color(0, 0, 0)
 
-        var i: Int = 0
-        while(i <= localmesh.size-3){
-            var vertex = Vec3()
-            var vertex2 = Vec3()
-            var vertex3 = Vec3()
+        for(meshnum in 0..localmesh.size-1) {
+            var i: Int = 0
+            while (i <= localmesh[meshnum].Geometry.size - 3) {
+                var vertex = Vec3()
+                var vertex2 = Vec3()
+                var vertex3 = Vec3()
 
-            // projection multiplication
+                // projection multiplication
 
-            var proj = Mat4()
+                var proj = Mat4()
 
-            proj.makeTranslateMat(position)
-            vertex = proj.vecMultiply(localmesh[i])
-            vertex2 = proj.vecMultiply(localmesh[i+1])
-            vertex3 = proj.vecMultiply(localmesh[i+2])
+                proj.makeTranslateMat(position)
+                vertex = proj.vecMultiply(localmesh[meshnum].Geometry[i])
+                vertex2 = proj.vecMultiply(localmesh[meshnum].Geometry[i + 1])
+                vertex3 = proj.vecMultiply(localmesh[meshnum].Geometry[i + 2])
 
-            proj.makeYRotMat(-rotation.x)
-            vertex = proj.vecMultiply(vertex)
-            vertex2 = proj.vecMultiply(vertex2)
-            vertex3 = proj.vecMultiply(vertex3)
+                proj.makeYRotMat(-rotation.x)
+                vertex = proj.vecMultiply(vertex)
+                vertex2 = proj.vecMultiply(vertex2)
+                vertex3 = proj.vecMultiply(vertex3)
 
-            proj.makeXRotMat(-rotation.y)
-            vertex = proj.vecMultiply(vertex)
-            vertex2 = proj.vecMultiply(vertex2)
-            vertex3 = proj.vecMultiply(vertex3)
+                proj.makeXRotMat(-rotation.y)
+                vertex = proj.vecMultiply(vertex)
+                vertex2 = proj.vecMultiply(vertex2)
+                vertex3 = proj.vecMultiply(vertex3)
 
-            proj.makePerspectiveProj(120.0f, 100.0f, 1.0f)
-            vertex = proj.vecMultiply(vertex)
-            vertex2 = proj.vecMultiply(vertex2)
-            vertex3 = proj.vecMultiply(vertex3)
+                proj.makePerspectiveProj(120.0f, 100.0f, 1.5f)
+                vertex = proj.vecMultiply(vertex)
+                vertex2 = proj.vecMultiply(vertex2)
+                vertex3 = proj.vecMultiply(vertex3)
 
-            if(vertex.z in 0.0f..1.0f && vertex2.z in 0.0f..1.0f && vertex3.z in 0.0f..1.0f){
-                var toRender = coordToScreen(vertex, localsize)
-                var toRender1 = coordToScreen(vertex2, localsize)
-                var toRender2 = coordToScreen(vertex3, localsize)
-                var Mass1: Array<Int> = arrayOf(toRender.x, toRender1.x, toRender2.x)
-                var Mass2: Array<Int> = arrayOf(toRender.y, toRender1.y, toRender2.y)
-                g2d.drawPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
-                //g2d.fillPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
+                if (vertex.z in 0.0f..1.0f && vertex2.z in 0.0f..1.0f && vertex3.z in 0.0f..1.0f) {
+                    var toRender = coordToScreen(vertex, localsize)
+                    var toRender1 = coordToScreen(vertex2, localsize)
+                    var toRender2 = coordToScreen(vertex3, localsize)
+                    var Mass1: Array<Int> = arrayOf(toRender.x, toRender1.x, toRender2.x)
+                    var Mass2: Array<Int> = arrayOf(toRender.y, toRender1.y, toRender2.y)
+                    g2d.drawPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
+                    //g2d.fillPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
+                }
+                i += 3
             }
-            i+=3
         }
     }
     public override fun paintComponent(g: Graphics) {
@@ -297,11 +306,11 @@ class Render(size: IVec2, mesh: Array<Vec3>): JPanel(){
     }
 }
 
-class Window(title: String, size: IVec2, mesh: Array<Vec3>): JFrame(){
+class Window(title: String, size: IVec2, mesh: Array<Mesh>): JFrame(){
     init{
         createWindow(title, size, mesh)
     }
-    private fun createWindow(wtitle: String,  size: IVec2, mesh: Array<Vec3>){
+    private fun createWindow(wtitle: String,  size: IVec2, mesh: Array<Mesh>){
         add(Render(size, mesh))
         title = wtitle
         isVisible = true
@@ -314,7 +323,7 @@ fun main(args: Array<String>) {
     var objfile: ObjReader = ObjReader()
     objfile.path = "/home/vlad/IdeaProjects/KTExperimets/src/main/resources/test.obj"
     objfile.readObj()
-    var mesh = objfile.readObj()
+    var mesh = arrayOf(objfile.readObj())
     var size = IVec2()
     size.x = 320
     size.y = 240
