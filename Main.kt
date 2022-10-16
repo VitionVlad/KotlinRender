@@ -26,6 +26,73 @@ class IVec2{
     var y: Int = 0
 }
 
+class Mat4{
+    var x = arrayOf(0.0f, 0.0f, 0.0f, 0.0f)
+    var y = arrayOf(0.0f, 0.0f, 0.0f, 0.0f)
+    var z = arrayOf(0.0f, 0.0f, 0.0f, 0.0f)
+    var w = arrayOf(0.0f, 0.0f, 0.0f, 0.0f)
+    fun makePerspectiveProj(fov: Float, far: Float, near: Float){
+        var scale = 1.0f/tan(fov/2* PI/180).toFloat()
+        x[0] = scale
+        y[1] = scale
+        z[2] = -far / (far-near)
+        w[2] = -far * near / (far-near)
+        z[3] = -1.0f
+        w[3] = 0.0f
+    }
+    fun makeTranslateMat(pos: Vec3){
+        x[0] = 1.0f
+        y[1] = 1.0f
+        z[2] = 1.0f
+
+        w[0] = pos.x
+        w[1] = pos.y
+        w[2] = pos.z
+
+        w[3] = 1.0f
+    }
+    fun makeXRotMat(rot: Float){
+        x[0] = 1.0f
+        y[1] = cos(rot)
+        z[1] = -sin(rot)
+
+        y[2] = sin(rot)
+        z[2] = cos(rot)
+
+        w[3] = 1.0f
+    }
+    fun makeYRotMat(rot: Float){
+        y[1] = 1.0f
+        x[0] = cos(rot)
+        z[0] = sin(rot)
+
+        x[2] = -sin(rot)
+        z[2] = cos(rot)
+
+        w[3] = 1.0f
+    }
+    fun makeZRotMat(rot: Float){
+        x[0] = cos(rot)
+        y[0] = -sin(rot)
+
+        x[1] = cos(rot)
+        y[1] = cos(rot)
+
+        w[3] = 1.0f
+    }
+    fun vecMultiply(vector: Vec3): Vec3{
+        var Result = Vec3()
+        Result.x = vector.x * x[0] + vector.y * y[0] + vector.z * z[0] + w[0]
+        Result.y = vector.x * x[1] + vector.y * y[1] + vector.z * z[1] + w[1]
+        Result.z = vector.x * x[2] + vector.y * y[2] + vector.z * z[2] + w[2]
+        var   hw = vector.x * x[3] + vector.y * y[3] + vector.z * z[3] + w[3]
+        Result.x /= hw
+        Result.y /= hw
+        Result.z /= hw
+        return Result
+    }
+}
+
 class ObjReader{
     var path: String = "example.obj"
     fun readObj(): Array<Vec3>{
@@ -76,12 +143,12 @@ var sensivity = 0.000002f
 class keyWork(): KeyListener{
     public override fun keyTyped(e: KeyEvent){
         if(e.keyCode == 87){
-            position.z -= cos(rotation.y) * cos(rotation.x) * speed
-            position.x -= cos(rotation.y) * cos(rotation.x) * speed
-        }
-        if(e.keyCode == 83){
             position.z += cos(rotation.y) * cos(rotation.x) * speed
             position.x += cos(rotation.y) * cos(rotation.x) * speed
+        }
+        if(e.keyCode == 83){
+            position.z -= cos(rotation.y) * cos(rotation.x) * speed
+            position.x -= cos(rotation.y) * cos(rotation.x) * speed
         }
         if(e.keyCode == 65){
             position.z += cos(rotation.y) * cos(rotation.x) * speed
@@ -93,10 +160,10 @@ class keyWork(): KeyListener{
         }
 
         if(e.keyCode == 81){
-            position.y -= speed
+            position.y += speed
         }
         if(e.keyCode == 69){
-            position.x += speed
+            position.y -= speed
         }
 
         if(e.keyCode == 37){
@@ -114,12 +181,12 @@ class keyWork(): KeyListener{
     }
     public override fun keyPressed(e: KeyEvent){
         if(e.keyCode == 87){
-            position.z -= cos(rotation.y) * cos(rotation.x) * speed
-            position.x -= cos(rotation.y) * sin(rotation.x) * speed
-        }
-        if(e.keyCode == 83){
             position.z += cos(rotation.y) * cos(rotation.x) * speed
             position.x += cos(rotation.y) * sin(rotation.x) * speed
+        }
+        if(e.keyCode == 83){
+            position.z -= cos(rotation.y) * cos(rotation.x) * speed
+            position.x -= cos(rotation.y) * sin(rotation.x) * speed
         }
         if(e.keyCode == 65){
             position.x += cos(rotation.y) * cos(rotation.x) * speed
@@ -131,10 +198,10 @@ class keyWork(): KeyListener{
         }
 
         if(e.keyCode == 81){
-            position.y -= speed
+            position.y += speed
         }
         if(e.keyCode == 69){
-            position.x += speed
+            position.y -= speed
         }
 
         if(e.keyCode == 37){
@@ -181,36 +248,46 @@ class Render(size: IVec2, mesh: Array<Vec3>): JPanel(){
             var vertex = Vec3()
             var vertex2 = Vec3()
             var vertex3 = Vec3()
-            var tanhalffov = 1.0f/tan((120.0f/2)*(PI/180.0f)).toFloat()
 
-            vertex2.z = (localmesh[i+1].z + position.z)/100f
-            vertex3.z = (localmesh[i+2].z + position.z)/100f
-            vertex.z = (localmesh[i].z + position.z)/100
+            // projection multiplication
 
-            vertex.x = (localmesh[i].x + position.x)*tanhalffov*(1.0f/(vertex.z*100.0f))*(localsize.x/localsize.y) * cos(rotation.x) + sin(rotation.x)
-            vertex.y = (localmesh[i].y - position.y)*tanhalffov*(1.0f/(vertex.z*100.0f)) * cos(rotation.y) - sin(rotation.y)
+            var proj = Mat4()
 
-            vertex2.x = (localmesh[i+1].x + position.x)*tanhalffov*(1.0f/(vertex2.z*100.0f))*(localsize.x/localsize.y) * cos(rotation.x) + sin(rotation.x)
-            vertex2.y = (localmesh[i+1].y - position.y)*tanhalffov*(1.0f/(vertex2.z*100.0f)) * cos(rotation.y) - sin(rotation.y)
+            proj.makeTranslateMat(position)
+            vertex = proj.vecMultiply(localmesh[i])
+            vertex2 = proj.vecMultiply(localmesh[i+1])
+            vertex3 = proj.vecMultiply(localmesh[i+2])
 
-            vertex3.x = (localmesh[i+2].x + position.x)*tanhalffov*(1.0f/(vertex3.z*100.0f))*(localsize.x/localsize.y) * cos(rotation.x) + sin(rotation.x)
-            vertex3.y = (localmesh[i+2].y - position.y)*tanhalffov*(1.0f/(vertex3.z*100.0f)) * cos(rotation.y) - sin(rotation.y)
+            proj.makeYRotMat(-rotation.x)
+            vertex = proj.vecMultiply(vertex)
+            vertex2 = proj.vecMultiply(vertex2)
+            vertex3 = proj.vecMultiply(vertex3)
 
-            if(vertex.z in 0.0f..1.0f && vertex2.z in 0.0f..1.0f){
+            proj.makeXRotMat(-rotation.y)
+            vertex = proj.vecMultiply(vertex)
+            vertex2 = proj.vecMultiply(vertex2)
+            vertex3 = proj.vecMultiply(vertex3)
+
+            proj.makePerspectiveProj(120.0f, 100.0f, 0.1f)
+            vertex = proj.vecMultiply(vertex)
+            vertex2 = proj.vecMultiply(vertex2)
+            vertex3 = proj.vecMultiply(vertex3)
+
+            if(vertex.z in 0.0f..1.0f && vertex2.z in 0.0f..1.0f && vertex3.z in 0.0f..1.0f){
                 var toRender = coordToScreen(vertex, localsize)
                 var toRender1 = coordToScreen(vertex2, localsize)
                 var toRender2 = coordToScreen(vertex3, localsize)
                 var Mass1: Array<Int> = arrayOf(toRender.x, toRender1.x, toRender2.x)
                 var Mass2: Array<Int> = arrayOf(toRender.y, toRender1.y, toRender2.y)
-                //g2d.drawPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
-                g2d.fillPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
+                g2d.drawPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
+                //g2d.fillPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
             }
             i+=3
         }
     }
     public override fun paintComponent(g: Graphics) {
+        addKeyListener(keyWork())
         super.paintComponent(g)
-        super.addKeyListener(keyWork())
         localsize.x = super.getSize().width
         localsize.y = super.getSize().height
         super.repaint()
@@ -233,7 +310,7 @@ class Window(title: String, size: IVec2, mesh: Array<Vec3>): JFrame(){
 }
 
 fun main(args: Array<String>) {
-    position.z = 3.0f
+    position.z = -1.0f
     var objfile: ObjReader = ObjReader()
     objfile.path = "/home/vlad/IdeaProjects/KTExperimets/src/main/resources/test.obj"
     objfile.readObj()
