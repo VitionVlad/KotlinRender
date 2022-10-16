@@ -10,3 +10,5 @@ in this triangle i render only 6 triangles, instead of 12, because only 6 are in
 ![Снимок экрана от 2022-10-16 20-56-08](https://user-images.githubusercontent.com/48290199/196050627-e8235efe-95a5-4868-b054-59d5709b9afb.png)
 in this image i entered a little bit inside th cube, as you can see, nothing renders, because everything inside is counter-clockwise.  
 For player this mean that only geometry that he can see will be rendered
+![Снимок экрана от 2022-10-16 21-02-52](https://user-images.githubusercontent.com/48290199/196050846-085c3e98-0868-4873-8929-af07b916fede.png)
+to render such wire, i loaded model twice in 2 diferent meshes, second mesh is rendered in wire mode, first normaly
