@@ -1,3 +1,4 @@
+
 import java.io.File
 import java.io.InputStream
 import java.util.Scanner
@@ -14,6 +15,12 @@ class Vec3{
     var x: Float = 0.0f
     var y: Float = 0.0f
     var z: Float = 0.0f
+}
+
+class Ivec3{
+    var x: Int = 0
+    var y: Int = 0
+    var z: Int = 0
 }
 
 class Vec2{
@@ -95,7 +102,8 @@ class Mat4{
 
 class Mesh{
     var Geometry: Array<Vec3> = emptyArray()
-    var Normals: Array<Vec3> = emptyArray()
+    var Color = Ivec3()
+    var RenderWired: Boolean = false
 }
 
 class ObjReader{
@@ -143,7 +151,7 @@ var position = Vec3()
 
 var rotation = Vec2()
 
-var speed = 0.00002f
+var speed = 0.000002f
 
 var sensivity = 0.000002f
 
@@ -239,6 +247,9 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
         finale.y = convert.y.toInt()
         return finale
     }
+    private fun ccw(a: Vec3, b: Vec3, c: Vec3): Float{
+        return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y)
+    }
     private fun doDrawing(g: Graphics) {
         val g2d = g as Graphics2D
         val rh = RenderingHints(
@@ -248,9 +259,8 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
         rh[RenderingHints.KEY_RENDERING] = RenderingHints.VALUE_RENDER_QUALITY
         g2d.setRenderingHints(rh)
 
-        g2d.paint = Color(0, 0, 0)
-
         for(meshnum in 0..localmesh.size-1) {
+            g2d.paint = Color(localmesh[meshnum].Color.x, localmesh[meshnum].Color.y, localmesh[meshnum].Color.z)
             var i: Int = 0
             while (i <= localmesh[meshnum].Geometry.size - 3) {
                 var vertex = Vec3()
@@ -281,14 +291,18 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
                 vertex2 = proj.vecMultiply(vertex2)
                 vertex3 = proj.vecMultiply(vertex3)
 
-                if (vertex.z in 0.0f..1.0f && vertex2.z in 0.0f..1.0f && vertex3.z in 0.0f..1.0f) {
+                var isccw = ccw(vertex, vertex2, vertex3)
+
+                if (vertex.z in 0.0f..1.0f && vertex2.z in 0.0f..1.0f && vertex3.z in 0.0f..1.0f && isccw > 0f) {
                     var toRender = coordToScreen(vertex, localsize)
                     var toRender1 = coordToScreen(vertex2, localsize)
                     var toRender2 = coordToScreen(vertex3, localsize)
                     var Mass1: Array<Int> = arrayOf(toRender.x, toRender1.x, toRender2.x)
                     var Mass2: Array<Int> = arrayOf(toRender.y, toRender1.y, toRender2.y)
-                    g2d.drawPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
-                    //g2d.fillPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
+                    when(localmesh[meshnum].RenderWired){
+                        true -> g2d.drawPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
+                        false -> g2d.fillPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
+                    }
                 }
                 i += 3
             }
@@ -324,8 +338,9 @@ fun main(args: Array<String>) {
     objfile.path = "/home/vlad/IdeaProjects/KTExperimets/src/main/resources/test.obj"
     objfile.readObj()
     var mesh = arrayOf(objfile.readObj())
+    mesh[0].Color.x = 200
     var size = IVec2()
-    size.x = 320
-    size.y = 240
+    size.x = 800
+    size.y = 600
     var window = Window("Kotlin Render", size, mesh)
 }
