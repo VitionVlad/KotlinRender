@@ -6,8 +6,6 @@ import java.awt.*
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
 import javax.swing.JPanel
-import javax.swing.text.Position
-import kotlin.math.PI
 import kotlin.math.*
 
 class Vec3{
@@ -274,8 +272,8 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
     private var localsize = size
     private fun coordToScreen(coord: Vec3, size: IVec2): IVec2{
         var convert = Vec2()
-        convert.x = (coord.x*size.x)+size.x/2
-        convert.y = (coord.y*size.y)+size.y/2
+        convert.x = (coord.x*(size.x/2))+size.x/2
+        convert.y = (coord.y*(size.y/2))+size.y/2
         var finale = IVec2()
         finale.x = convert.x.toInt()
         finale.y = convert.y.toInt()
