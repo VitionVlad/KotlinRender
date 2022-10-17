@@ -295,8 +295,7 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
 
         for(meshnum in localmesh.indices) {
             g2d.paint = Color(localmesh[meshnum].Color.x, localmesh[meshnum].Color.y, localmesh[meshnum].Color.z)
-            var i: Int = 0
-            while (i <= localmesh[meshnum].Geometry.size - 3) {
+            for (i in 0.. localmesh[meshnum].Geometry.size - 3 step 3) {
                 var vertex = Vec3()
                 var vertex2 = Vec3()
                 var vertex3 = Vec3()
@@ -331,13 +330,11 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
                 vertex2 = proj.vecMultiply(vertex2)
                 vertex3 = proj.vecMultiply(vertex3)
 
-                var isccw: Float
-
-                when(localmesh[meshnum].BackFaceCulling){
-                    0 -> isccw = 1.0f
-                    1 -> isccw = ccw(vertex, vertex2, vertex3)
-                    2 -> isccw = -ccw(vertex, vertex2, vertex3)
-                    else -> isccw = ccw(vertex, vertex2, vertex3)
+                var isccw: Float = when(localmesh[meshnum].BackFaceCulling){
+                    0 -> 1.0f
+                    1 -> ccw(vertex, vertex2, vertex3)
+                    2 -> -ccw(vertex, vertex2, vertex3)
+                    else -> ccw(vertex, vertex2, vertex3)
                 }
 
                 if (vertex.z in 0.0f..1.0f && vertex2.z in 0.0f..1.0f && vertex3.z in 0.0f..1.0f && isccw > 0f) {
@@ -351,7 +348,6 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
                         false -> g2d.fillPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
                     }
                 }
-                i += 3
             }
         }
     }
