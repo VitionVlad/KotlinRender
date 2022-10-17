@@ -1,4 +1,3 @@
-
 import java.io.File
 import java.io.InputStream
 import java.util.Scanner
@@ -294,7 +293,7 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
         rh[RenderingHints.KEY_RENDERING] = RenderingHints.VALUE_RENDER_QUALITY
         g2d.setRenderingHints(rh)
 
-        for(meshnum in 0..localmesh.size-1) {
+        for(meshnum in localmesh.indices) {
             g2d.paint = Color(localmesh[meshnum].Color.x, localmesh[meshnum].Color.y, localmesh[meshnum].Color.z)
             var i: Int = 0
             while (i <= localmesh[meshnum].Geometry.size - 3) {
