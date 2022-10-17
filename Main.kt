@@ -15,6 +15,20 @@ class Vec3{
     var x: Float = 0.0f
     var y: Float = 0.0f
     var z: Float = 0.0f
+    fun Sum(a: Vec3): Vec3{
+        var rs = Vec3()
+        rs.x = x + a.x
+        rs.y = y + a.y
+        rs.z = z + a.z
+        return rs
+    }
+    fun Sub(a: Vec3): Vec3{
+        var rs = Vec3()
+        rs.x = x - a.x
+        rs.y = y - a.y
+        rs.z = z - a.z
+        return rs
+    }
 }
 
 class Ivec3{
@@ -121,6 +135,7 @@ class Mat4{
 
 class Mesh{
     var Geometry: Array<Vec3> = emptyArray()
+    var MeshPosition = Vec3()
     var Color = Ivec3()
     var RenderWired: Boolean = false
     var BackFaceCulling: Int = 1
@@ -291,7 +306,9 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
 
                 var proj = Mat4()
 
-                proj.makeTranslateMat(position)
+                var finalpos = position
+
+                proj.makeTranslateMat(position.Sub(localmesh[meshnum].MeshPosition))
                 vertex = proj.vecMultiply(localmesh[meshnum].Geometry[i])
                 vertex2 = proj.vecMultiply(localmesh[meshnum].Geometry[i + 1])
                 vertex3 = proj.vecMultiply(localmesh[meshnum].Geometry[i + 2])
@@ -374,6 +391,8 @@ fun main(args: Array<String>) {
     var mesh = arrayOf(objfile.readObj(), objfile.readObj())
     mesh[0].Color.x = 200
     mesh[1].RenderWired = true
+
+    mesh[0].MeshPosition.z = 10.0f
 
     var size = IVec2()
     size.x = 800
