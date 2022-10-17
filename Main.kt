@@ -306,8 +306,6 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
 
                 var proj = Mat4()
 
-                var finalpos = position
-
                 proj.makeTranslateMat(position.Sub(localmesh[meshnum].MeshPosition))
                 vertex = proj.vecMultiply(localmesh[meshnum].Geometry[i])
                 vertex2 = proj.vecMultiply(localmesh[meshnum].Geometry[i + 1])
@@ -391,9 +389,6 @@ fun main(args: Array<String>) {
     var mesh = arrayOf(objfile.readObj(), objfile.readObj())
     mesh[0].Color.x = 200
     mesh[1].RenderWired = true
-
-    mesh[0].MeshPosition.z = 10.0f
-
     var size = IVec2()
     size.x = 800
     size.y = 600
