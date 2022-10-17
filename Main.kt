@@ -87,6 +87,25 @@ class Mat4{
 
         w[3] = 1.0f
     }
+    fun matrixRotate(rot: Float, axis: Vec3){
+        var a = rot
+        var c = cos(rot)
+        var s = sin(rot)
+        var temp = Vec3()
+        temp.x = (1.0f-c)*axis.x
+        temp.y = (1.0f-c)*axis.y
+        temp.z = (1.0f-c)*axis.z
+        x = arrayOf(c+temp.x*axis.x, temp.x*axis.y+s*axis.z, temp.x*axis.z-s*axis.y, 0.0f)
+        y = arrayOf(temp.y*axis.x-s*axis.z, c+temp.x*axis.x, temp.y*axis.z-s*axis.x, 0.0f)
+        z = arrayOf(temp.z*axis.x+s*axis.y, temp.z*axis.y-s*axis.x, c+temp.y*axis.y, 0.0f)
+        w = arrayOf(0.0f, 0.0f, 0.0f, 1.0f)
+    }
+    fun clearMat(){
+        x = arrayOf(0.0f, 0.0f, 0.0f, 0.0f)
+        y = arrayOf(0.0f, 0.0f, 0.0f, 0.0f)
+        z = arrayOf(0.0f, 0.0f, 0.0f, 0.0f)
+        w = arrayOf(0.0f, 0.0f, 0.0f, 0.0f)
+    }
     fun vecMultiply(vector: Vec3): Vec3{
         var Result = Vec3()
         Result.x = vector.x * x[0] + vector.y * y[0] + vector.z * z[0] + w[0]
@@ -104,6 +123,7 @@ class Mesh{
     var Geometry: Array<Vec3> = emptyArray()
     var Color = Ivec3()
     var RenderWired: Boolean = false
+    var BackFaceCulling: Int = 1
 }
 
 class ObjReader{
@@ -151,9 +171,9 @@ var position = Vec3()
 
 var rotation = Vec2()
 
-var speed = 0.000002f
+var speed = 0.00005f
 
-var sensivity = 0.000002f
+var sensivity = 0.00005f
 
 class keyWork(): KeyListener{
     public override fun keyTyped(e: KeyEvent){
@@ -240,8 +260,8 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
     private var localsize = size
     private fun coordToScreen(coord: Vec3, size: IVec2): IVec2{
         var convert = Vec2()
-        convert.x = (coord.x*size.x)
-        convert.y = (coord.y*size.y)
+        convert.x = (coord.x*size.x)+size.x/2
+        convert.y = (coord.y*size.y)+size.y/2
         var finale = IVec2()
         finale.x = convert.x.toInt()
         finale.y = convert.y.toInt()
@@ -276,22 +296,35 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
                 vertex2 = proj.vecMultiply(localmesh[meshnum].Geometry[i + 1])
                 vertex3 = proj.vecMultiply(localmesh[meshnum].Geometry[i + 2])
 
+                proj.clearMat()
+
                 proj.makeYRotMat(-rotation.x)
                 vertex = proj.vecMultiply(vertex)
                 vertex2 = proj.vecMultiply(vertex2)
                 vertex3 = proj.vecMultiply(vertex3)
+
+                proj.clearMat()
 
                 proj.makeXRotMat(-rotation.y)
                 vertex = proj.vecMultiply(vertex)
                 vertex2 = proj.vecMultiply(vertex2)
                 vertex3 = proj.vecMultiply(vertex3)
 
-                proj.makePerspectiveProj(120.0f, 100.0f, 1.5f)
+                proj.clearMat()
+
+                proj.makePerspectiveProj(120.0f, 100.0f, 0.1f)
                 vertex = proj.vecMultiply(vertex)
                 vertex2 = proj.vecMultiply(vertex2)
                 vertex3 = proj.vecMultiply(vertex3)
 
-                var isccw = ccw(vertex, vertex2, vertex3)
+                var isccw: Float
+
+                when(localmesh[meshnum].BackFaceCulling){
+                    0 -> isccw = 1.0f
+                    1 -> isccw = ccw(vertex, vertex2, vertex3)
+                    2 -> isccw = -ccw(vertex, vertex2, vertex3)
+                    else -> isccw = ccw(vertex, vertex2, vertex3)
+                }
 
                 if (vertex.z in 0.0f..1.0f && vertex2.z in 0.0f..1.0f && vertex3.z in 0.0f..1.0f && isccw > 0f) {
                     var toRender = coordToScreen(vertex, localsize)
@@ -334,13 +367,14 @@ class Window(title: String, useOpenGL: String, size: IVec2, mesh: Array<Mesh>): 
 }
 
 fun main(args: Array<String>) {
-    position.z = -1.0f
+    position.z = -3.0f
     var objfile: ObjReader = ObjReader()
     objfile.path = "/home/vlad/IdeaProjects/KTExperimets/src/main/resources/test.obj"
     objfile.readObj()
     var mesh = arrayOf(objfile.readObj(), objfile.readObj())
     mesh[0].Color.x = 200
     mesh[1].RenderWired = true
+
     var size = IVec2()
     size.x = 800
     size.y = 600
