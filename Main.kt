@@ -5,6 +5,7 @@ import javax.swing.JFrame
 import java.awt.*
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
+import java.awt.image.BufferedImage
 import javax.swing.JPanel
 import kotlin.math.*
 
@@ -185,7 +186,7 @@ var rotation = Vec2()
 
 var speed = 0.00005f
 
-var sensivity = 0.00005f
+var sensivity = 1f
 
 class keyWork(): KeyListener{
     public override fun keyTyped(e: KeyEvent){
@@ -270,6 +271,7 @@ class keyWork(): KeyListener{
 class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
     private var localmesh = mesh
     private var localsize = size
+    private var mspos = IVec2()
     private fun coordToScreen(coord: Vec3, size: IVec2): IVec2{
         var convert = Vec2()
         convert.x = (coord.x*(size.x/2))+size.x/2
@@ -290,6 +292,14 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
         )
         rh[RenderingHints.KEY_RENDERING] = RenderingHints.VALUE_RENDER_QUALITY
         g2d.setRenderingHints(rh)
+
+        var mousepos = MouseInfo.getPointerInfo()
+
+        mspos.x += mousepos.location.x - localsize.x/2
+        mspos.y += mousepos.location.y - localsize.y/2
+
+        rotation.x = -mspos.x.toFloat() / localsize.x * sensivity
+        rotation.y = mspos.y.toFloat() / localsize.y * sensivity
 
         for(meshnum in localmesh.indices) {
             g2d.paint = Color(localmesh[meshnum].Color.x, localmesh[meshnum].Color.y, localmesh[meshnum].Color.z)
@@ -347,10 +357,12 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
                     }
                 }
             }
+            var r = Robot()
+            r.mouseMove(localsize.x/2, localsize.y/2)
         }
     }
     public override fun paintComponent(g: Graphics) {
-        addKeyListener(keyWork())
+        super.addKeyListener(keyWork())
         super.paintComponent(g)
         localsize.x = super.getSize().width
         localsize.y = super.getSize().height
@@ -358,6 +370,7 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
         doDrawing(g)
         super.setFocusable(true)
         super.setFocusTraversalKeysEnabled(true)
+        super.setCursor(super.getToolkit().createCustomCursor(BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), Point(), "a"))
     }
 }
 
@@ -382,6 +395,7 @@ fun main(args: Array<String>) {
     var mesh = arrayOf(objfile.readObj(), objfile.readObj())
     mesh[0].Color.x = 200
     mesh[1].RenderWired = true
+    mesh[0].MeshPosition.z = 3.0f
     var size = IVec2()
     size.x = 800
     size.y = 600
