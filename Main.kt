@@ -1,3 +1,4 @@
+
 import java.io.File
 import java.io.InputStream
 import java.util.Scanner
@@ -213,19 +214,6 @@ class keyWork(): KeyListener{
         if(e.keyCode == 69){
             position.y -= speed
         }
-
-        if(e.keyCode == 37){
-            rotation.x += sensivity
-        }
-        if(e.keyCode == 38){
-            rotation.y -= sensivity
-        }
-        if(e.keyCode == 39){
-            rotation.x -= sensivity
-        }
-        if(e.keyCode == 40){
-            rotation.y += sensivity
-        }
     }
     public override fun keyPressed(e: KeyEvent){
         if(e.keyCode == 87){
@@ -250,19 +238,6 @@ class keyWork(): KeyListener{
         }
         if(e.keyCode == 69){
             position.y -= speed
-        }
-
-        if(e.keyCode == 37){
-            rotation.x += sensivity
-        }
-        if(e.keyCode == 38){
-            rotation.y -= sensivity
-        }
-        if(e.keyCode == 39){
-            rotation.x -= sensivity
-        }
-        if(e.keyCode == 40){
-            rotation.y += sensivity
         }
     }
     public override fun keyReleased(e: KeyEvent){}
@@ -295,11 +270,20 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
 
         var mousepos = MouseInfo.getPointerInfo()
 
-        mspos.x += mousepos.location.x - localsize.x/2
-        mspos.y += mousepos.location.y - localsize.y/2
+        var r = Robot()
 
-        rotation.x = -mspos.x.toFloat() / localsize.x * sensivity
-        rotation.y = mspos.y.toFloat() / localsize.y * sensivity
+        if(mspos.x != mousepos.location.x - localsize.x/2){
+            mspos.x = mousepos.location.x - localsize.x/2
+            r.mouseMove(localsize.x/2, localsize.y/2)
+        }
+
+        if(mspos.y != mousepos.location.y - localsize.y/2){
+            mspos.y = mousepos.location.y - localsize.y/2
+            r.mouseMove(localsize.x/2, localsize.y/2)
+        }
+
+        rotation.x += -mspos.x.toFloat() / localsize.x * sensivity
+        rotation.y += mspos.y.toFloat() / localsize.y * sensivity
 
         for(meshnum in localmesh.indices) {
             g2d.paint = Color(localmesh[meshnum].Color.x, localmesh[meshnum].Color.y, localmesh[meshnum].Color.z)
@@ -357,8 +341,6 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
                     }
                 }
             }
-            var r = Robot()
-            r.mouseMove(localsize.x/2, localsize.y/2)
         }
     }
     public override fun paintComponent(g: Graphics) {
