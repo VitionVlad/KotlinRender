@@ -1,4 +1,3 @@
-
 import java.io.File
 import java.io.InputStream
 import java.util.Scanner
@@ -358,6 +357,8 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
 
 class Window(title: String, useOpenGL: String, size: IVec2, mesh: Array<Mesh>): JFrame(){
     init{
+        var r = Robot()
+        r.mouseMove(size.x/2, size.y/2)
         System.setProperty("sun.java2d.opengl", useOpenGL)
         createWindow(title, size, mesh)
     }
@@ -377,7 +378,6 @@ fun main(args: Array<String>) {
     var mesh = arrayOf(objfile.readObj(), objfile.readObj())
     mesh[0].Color.x = 200
     mesh[1].RenderWired = true
-    mesh[0].MeshPosition.z = 3.0f
     var size = IVec2()
     size.x = 800
     size.y = 600
