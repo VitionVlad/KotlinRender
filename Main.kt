@@ -8,8 +8,16 @@ fun main(args: Array<String>) {
     var mesh = arrayOf(objfile.readObj("/home/vlad/IdeaProjects/KTExperimets/src/main/resources/test.obj"), objfile.readObj("/home/vlad/IdeaProjects/KTExperimets/src/main/resources/test.obj"))
     mesh[0].Color.x = 200
     mesh[1].RenderWired = true
+    mesh[1].MeshPosition.y = 6f
+    mesh[0].calcBorders()
+    mesh[1].calcBorders()
     var size = IVec2()
     size.x = 800
     size.y = 600
     var window = Window("Kotlin Render", "true", size, mesh)
+    while (true){
+        mesh[1].MeshPosition.y -= 0.01f
+        mesh[1].meshMeshIntersection(mesh[0])
+        Thread.sleep(10)
+    }
 }

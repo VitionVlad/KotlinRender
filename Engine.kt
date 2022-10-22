@@ -1,8 +1,5 @@
 package Engine
 
-import java.io.File
-import java.io.InputStream
-import java.util.Scanner
 import javax.swing.JFrame
 import java.awt.*
 import java.awt.image.BufferedImage
@@ -20,7 +17,7 @@ var speed = 0.00005f
 var sensivity = 1f
 
 class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
-    private var localmesh = mesh
+    private var localmesh: Array<Mesh> = mesh
     private var localsize = size
     private var mspos = IVec2()
     private fun coordToScreen(coord: Vec3, size: IVec2): IVec2{
