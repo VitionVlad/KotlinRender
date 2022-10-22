@@ -16,8 +16,7 @@ fun main(args: Array<String>) {
     size.y = 600
     var window = Window("Kotlin Render", "true", size, mesh)
     while (true){
-        mesh[1].MeshPosition.y -= 0.01f
-        mesh[1].meshMeshIntersection(mesh[0])
+        mesh[1].PhysWork(mesh)
         Thread.sleep(10)
     }
 }

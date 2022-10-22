@@ -15,6 +15,7 @@ class Mesh{
     var RenderWired: Boolean = false
     var BackFaceCulling: Int = 1
     var Borders = Vec3()
+    var mass = 0.01f
     private var localPos = Vec3()
     fun calcBorders(){
         var max = Vec3()
@@ -65,38 +66,44 @@ class Mesh{
             localPos.z = MeshPosition.z
         }
     }
-    fun posMeshIntersection(m1: Mesh){
-        if(m1.MeshPosition.x >= MeshPosition.x - Borders.x){
+    fun posMeshIntersection(v1: Vec3){
+        if(v1.x >= MeshPosition.x - Borders.x){
             MeshPosition.x = localPos.x
         }else{
             localPos.x = MeshPosition.x
         }
-        if(m1.MeshPosition.x  >= MeshPosition.x + Borders.x){
+        if(v1.x  >= MeshPosition.x + Borders.x){
             MeshPosition.x = localPos.x
         }else{
             localPos.x = MeshPosition.x
         }
 
-        if(m1.MeshPosition.y  >= MeshPosition.y - Borders.y){
+        if(v1.y  >= MeshPosition.y - Borders.y){
             MeshPosition.y = localPos.y
         }else{
             localPos.y = MeshPosition.y
         }
-        if(m1.MeshPosition.y >= MeshPosition.y + Borders.y){
+        if(v1.y >= MeshPosition.y + Borders.y){
             MeshPosition.y = localPos.y
         }else{
             localPos.y = MeshPosition.y
         }
 
-        if(m1.MeshPosition.z >= MeshPosition.z - Borders.z){
+        if(v1.z >= MeshPosition.z - Borders.z){
             MeshPosition.z = localPos.z
         }else{
             localPos.z = MeshPosition.z
         }
-        if(m1.MeshPosition.z  >= MeshPosition.z + Borders.z){
+        if(v1.z  >= MeshPosition.z + Borders.z){
             MeshPosition.z = localPos.z
         }else{
             localPos.z = MeshPosition.z
+        }
+    }
+    fun PhysWork(interact: Array<Mesh>){
+        MeshPosition.y -= mass
+        for(i in interact.indices){
+            meshMeshIntersection(interact[i])
         }
     }
 }
