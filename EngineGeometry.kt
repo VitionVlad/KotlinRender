@@ -6,6 +6,7 @@ import java.io.File
 import java.io.InputStream
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.abs
 
 class Mesh{
     var Geometry: Array<Vec3> = emptyArray()
@@ -13,6 +14,91 @@ class Mesh{
     var Color = Ivec3()
     var RenderWired: Boolean = false
     var BackFaceCulling: Int = 1
+    var Borders = Vec3()
+    private var localPos = Vec3()
+    fun calcBorders(){
+        var max = Vec3()
+        for(i in 0..Geometry.size-3){
+            if(abs(Geometry[i].x) > max.x){
+                max.x = abs(Geometry[i].x)
+            }
+            if(abs(Geometry[i].y) > max.y){
+                max.y = abs(Geometry[i].y)
+            }
+            if(abs(Geometry[i].y) > max.y){
+                max.y = abs(Geometry[i].y)
+            }
+        }
+        Borders = max
+    }
+    fun meshMeshIntersection(m1: Mesh){
+        if(m1.MeshPosition.x + m1.Borders.x >= MeshPosition.x - Borders.x){
+            MeshPosition.x = localPos.x
+        }else{
+            localPos.x = MeshPosition.x
+        }
+        if(m1.MeshPosition.x - m1.Borders.x >= MeshPosition.x + Borders.x){
+            MeshPosition.x = localPos.x
+        }else{
+            localPos.x = MeshPosition.x
+        }
+
+        if(m1.MeshPosition.y + m1.Borders.y >= MeshPosition.y - Borders.y){
+            MeshPosition.y = localPos.y
+        }else{
+            localPos.y = MeshPosition.y
+        }
+        if(m1.MeshPosition.y - m1.Borders.y >= MeshPosition.y + Borders.y){
+            MeshPosition.y = localPos.y
+        }else{
+            localPos.y = MeshPosition.y
+        }
+
+        if(m1.MeshPosition.z + m1.Borders.z >= MeshPosition.z - Borders.z){
+            MeshPosition.z = localPos.z
+        }else{
+            localPos.z = MeshPosition.z
+        }
+        if(m1.MeshPosition.z - m1.Borders.z >= MeshPosition.z + Borders.z){
+            MeshPosition.z = localPos.z
+        }else{
+            localPos.z = MeshPosition.z
+        }
+    }
+    fun posMeshIntersection(m1: Mesh){
+        if(m1.MeshPosition.x >= MeshPosition.x - Borders.x){
+            MeshPosition.x = localPos.x
+        }else{
+            localPos.x = MeshPosition.x
+        }
+        if(m1.MeshPosition.x  >= MeshPosition.x + Borders.x){
+            MeshPosition.x = localPos.x
+        }else{
+            localPos.x = MeshPosition.x
+        }
+
+        if(m1.MeshPosition.y  >= MeshPosition.y - Borders.y){
+            MeshPosition.y = localPos.y
+        }else{
+            localPos.y = MeshPosition.y
+        }
+        if(m1.MeshPosition.y >= MeshPosition.y + Borders.y){
+            MeshPosition.y = localPos.y
+        }else{
+            localPos.y = MeshPosition.y
+        }
+
+        if(m1.MeshPosition.z >= MeshPosition.z - Borders.z){
+            MeshPosition.z = localPos.z
+        }else{
+            localPos.z = MeshPosition.z
+        }
+        if(m1.MeshPosition.z  >= MeshPosition.z + Borders.z){
+            MeshPosition.z = localPos.z
+        }else{
+            localPos.z = MeshPosition.z
+        }
+    }
 }
 
 class ObjReader{
