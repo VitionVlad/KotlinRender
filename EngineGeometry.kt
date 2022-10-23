@@ -1,3 +1,4 @@
+
 package Engine.Geometry
 
 import Engine.Math.Ivec3
@@ -33,38 +34,14 @@ class Mesh{
         Borders = max
     }
     fun meshMeshIntersection(m1: Mesh){
-        if(m1.MeshPosition.x + m1.Borders.x >= MeshPosition.x - Borders.x){
+        if((m1.MeshPosition.x + m1.Borders.x >= MeshPosition.x - Borders.x || m1.MeshPosition.x - m1.Borders.x >= MeshPosition.x + Borders.x)&&(m1.MeshPosition.y + m1.Borders.y >= MeshPosition.y - Borders.y || m1.MeshPosition.y - m1.Borders.y >= MeshPosition.y + Borders.y)&&(m1.MeshPosition.z + m1.Borders.z >= MeshPosition.z - Borders.z || m1.MeshPosition.z - m1.Borders.z >= MeshPosition.z + Borders.z)){
             MeshPosition.x = localPos.x
-        }else{
-            localPos.x = MeshPosition.x
-        }
-        if(m1.MeshPosition.x - m1.Borders.x >= MeshPosition.x + Borders.x){
-            MeshPosition.x = localPos.x
-        }else{
-            localPos.x = MeshPosition.x
-        }
-
-        if(m1.MeshPosition.y + m1.Borders.y >= MeshPosition.y - Borders.y){
             MeshPosition.y = localPos.y
-        }else{
-            localPos.y = MeshPosition.y
-        }
-        if(m1.MeshPosition.y - m1.Borders.y >= MeshPosition.y + Borders.y){
-            MeshPosition.y = localPos.y
-        }else{
-            localPos.y = MeshPosition.y
-        }
-
-        if(m1.MeshPosition.z + m1.Borders.z >= MeshPosition.z - Borders.z){
             MeshPosition.z = localPos.z
-        }else{
-            localPos.z = MeshPosition.z
         }
-        if(m1.MeshPosition.z - m1.Borders.z >= MeshPosition.z + Borders.z){
-            MeshPosition.z = localPos.z
-        }else{
-            localPos.z = MeshPosition.z
-        }
+        localPos.x = MeshPosition.x
+        localPos.y = MeshPosition.y
+        localPos.z = MeshPosition.z
     }
     fun PhysWork(interact: Array<Mesh>){
         MeshPosition.y -= mass
