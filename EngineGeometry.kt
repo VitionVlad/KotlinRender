@@ -26,8 +26,8 @@ class Mesh{
             if(abs(Geometry[i].y) > max.y){
                 max.y = abs(Geometry[i].y)
             }
-            if(abs(Geometry[i].y) > max.y){
-                max.y = abs(Geometry[i].y)
+            if(abs(Geometry[i].z) > max.z){
+                max.z = abs(Geometry[i].z)
             }
         }
         Borders = max
@@ -61,40 +61,6 @@ class Mesh{
             localPos.z = MeshPosition.z
         }
         if(m1.MeshPosition.z - m1.Borders.z >= MeshPosition.z + Borders.z){
-            MeshPosition.z = localPos.z
-        }else{
-            localPos.z = MeshPosition.z
-        }
-    }
-    fun posMeshIntersection(v1: Vec3){
-        if(v1.x >= MeshPosition.x - Borders.x){
-            MeshPosition.x = localPos.x
-        }else{
-            localPos.x = MeshPosition.x
-        }
-        if(v1.x  >= MeshPosition.x + Borders.x){
-            MeshPosition.x = localPos.x
-        }else{
-            localPos.x = MeshPosition.x
-        }
-
-        if(v1.y  >= MeshPosition.y - Borders.y){
-            MeshPosition.y = localPos.y
-        }else{
-            localPos.y = MeshPosition.y
-        }
-        if(v1.y >= MeshPosition.y + Borders.y){
-            MeshPosition.y = localPos.y
-        }else{
-            localPos.y = MeshPosition.y
-        }
-
-        if(v1.z >= MeshPosition.z - Borders.z){
-            MeshPosition.z = localPos.z
-        }else{
-            localPos.z = MeshPosition.z
-        }
-        if(v1.z  >= MeshPosition.z + Borders.z){
             MeshPosition.z = localPos.z
         }else{
             localPos.z = MeshPosition.z
