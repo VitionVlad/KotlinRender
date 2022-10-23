@@ -16,6 +16,8 @@ var speed = 0.00005f
 
 var sensivity = 1f
 
+var enableMeshColision = true
+
 class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
     private var localmesh: Array<Mesh> = mesh
     private var localsize = size
@@ -58,7 +60,9 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
         rh[RenderingHints.KEY_RENDERING] = RenderingHints.VALUE_RENDER_QUALITY
         g2d.setRenderingHints(rh)
 
-        playerColision(localmesh)
+        if(enableMeshColision){
+            playerColision(localmesh)
+        }
 
         var mousepos = MouseInfo.getPointerInfo()
 
