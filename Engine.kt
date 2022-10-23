@@ -20,6 +20,23 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
     private var localmesh: Array<Mesh> = mesh
     private var localsize = size
     private var mspos = IVec2()
+    private var lastPos = Vec3()
+    var lastPlayerPosition = Vec3()
+    fun returnLocation(){
+        position.x = lastPlayerPosition.x
+        position.y = lastPlayerPosition.y
+        position.z = lastPlayerPosition.z
+    }
+    fun playerColision(mesh: Array<Mesh>){
+        for(i in mesh.indices){
+            if(position.z in mesh[i].MeshPosition.z-mesh[i].Borders.z..mesh[i].MeshPosition.z+mesh[i].Borders.z && position.y in mesh[i].MeshPosition.y-mesh[i].Borders.y..mesh[i].MeshPosition.y+mesh[i].Borders.y && position.x in mesh[i].MeshPosition.x-mesh[i].Borders.x..mesh[i].MeshPosition.x+mesh[i].Borders.x){
+                returnLocation()
+            }
+        }
+        lastPlayerPosition.x = position.x.toFloat()
+        lastPlayerPosition.y = position.y.toFloat()
+        lastPlayerPosition.z = position.z.toFloat()
+    }
     private fun coordToScreen(coord: Vec3, size: IVec2): IVec2{
         var convert = Vec2()
         convert.x = (coord.x*(size.x/2))+size.x/2
@@ -40,6 +57,8 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
         )
         rh[RenderingHints.KEY_RENDERING] = RenderingHints.VALUE_RENDER_QUALITY
         g2d.setRenderingHints(rh)
+
+        playerColision(localmesh)
 
         var mousepos = MouseInfo.getPointerInfo()
 
