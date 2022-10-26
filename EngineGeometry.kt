@@ -1,4 +1,3 @@
-
 package Engine.Geometry
 
 import Engine.Math.Ivec3
@@ -17,6 +16,7 @@ class Mesh{
     var BackFaceCulling: Int = 1
     var Borders = Vec3()
     var mass = 0.01f
+    var projectetPosition = Vec3()
     private var localPos = Vec3()
     fun calcBorders(){
         var max = Vec3()

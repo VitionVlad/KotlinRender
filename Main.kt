@@ -9,6 +9,7 @@ fun main(args: Array<String>) {
     mesh[0].Color.x = 200
     mesh[1].RenderWired = true
     mesh[1].MeshPosition.y = 6f
+    mesh[1].MeshPosition.z = 0.5f
     mesh[0].calcBorders()
     mesh[1].calcBorders()
     var size = IVec2()

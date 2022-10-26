@@ -18,12 +18,37 @@ var sensivity = 1f
 
 var enableMeshColision = true
 
+var fov = 1209.0f
+
 class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
     private var localmesh: Array<Mesh> = mesh
     private var localsize = size
     private var mspos = IVec2()
-    private var lastPos = Vec3()
     var lastPlayerPosition = Vec3()
+    fun meshOrdering(mesh: Array<Mesh>): Array<Mesh>{
+        var lcmesh = mesh
+        for(i in mesh.indices){
+            var pos = Vec3()
+            pos.x = -mesh[i].MeshPosition.x
+            pos.y = -mesh[i].MeshPosition.y
+            pos.z = -mesh[i].MeshPosition.z
+            var proj = Mat4()
+            proj.makeTranslateMat(position)
+            pos = proj.vecMultiply(pos)
+            proj.clearMat()
+            proj.makeYRotMat(-rotation.x)
+            pos = proj.vecMultiply(pos)
+            proj.clearMat()
+            proj.makeXRotMat(-rotation.y)
+            pos = proj.vecMultiply(pos)
+            proj.clearMat()
+            proj.makePerspectiveProj(fov, 100.0f, 0.1f)
+            pos = proj.vecMultiply(pos)
+            lcmesh[i].projectetPosition = pos
+        }
+        var finale = lcmesh.sortedByDescending { it.projectetPosition.z }
+        return finale.toTypedArray()
+    }
     fun returnLocation(){
         position.x = lastPlayerPosition.x
         position.y = lastPlayerPosition.y
@@ -83,7 +108,10 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
         rotation.x += -mspos.x.toFloat() / localsize.x * sensivity
         rotation.y += mspos.y.toFloat() / localsize.y * sensivity
 
+        localmesh = meshOrdering(localmesh)
+
         for(meshnum in localmesh.indices) {
+            g2d.paint = Color(localmesh[meshnum].Color.x, localmesh[meshnum].Color.y, localmesh[meshnum].Color.z)
             for (i in 0.. localmesh[meshnum].Geometry.size - 3 step 3) {
                 var vertex = Vec3()
                 var vertex2 = Vec3()
@@ -114,24 +142,11 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
 
                 proj.clearMat()
 
-                proj.makePerspectiveProj(120.0f, 100.0f, 0.1f)
+                proj.makePerspectiveProj(fov, 100.0f, 0.1f)
                 vertex = proj.vecMultiply(vertex)
                 vertex2 = proj.vecMultiply(vertex2)
                 vertex3 = proj.vecMultiply(vertex3)
 
-                geom.add(vertex)
-                geom.add(vertex2)
-                geom.add(vertex3)
-            }
-        }
-        var addto = 0
-        var toadd = 0
-        for(meshnum in localmesh.indices) {
-            g2d.paint = Color(localmesh[meshnum].Color.x, localmesh[meshnum].Color.y, localmesh[meshnum].Color.z)
-            for (i in 0..localmesh[meshnum].Geometry.size - 3 step 3) {
-                var vertex = geom[i+addto]
-                var vertex2 = geom[i+addto+1]
-                var vertex3 = geom[i+addto+2]
                 var isccw: Float = when(localmesh[meshnum].BackFaceCulling){
                     0 -> 1.0f
                     1 -> ccw(vertex, vertex2, vertex3)
@@ -149,9 +164,7 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
                         false -> g2d.fillPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
                     }
                 }
-                toadd = i
             }
-            addto+=toadd+3
         }
     }
     public override fun paintComponent(g: Graphics) {
