@@ -18,7 +18,9 @@ var sensivity = 1f
 
 var enableMeshColision = true
 
-var fov = 1209.0f
+var fov = 120.0f
+
+var enableMeshOrdering = true
 
 class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
     private var localmesh: Array<Mesh> = mesh
@@ -108,7 +110,9 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
         rotation.x += -mspos.x.toFloat() / localsize.x * sensivity
         rotation.y += mspos.y.toFloat() / localsize.y * sensivity
 
-        localmesh = meshOrdering(localmesh)
+        if(enableMeshOrdering){
+            localmesh = meshOrdering(localmesh)
+        }
 
         for(meshnum in localmesh.indices) {
             g2d.paint = Color(localmesh[meshnum].Color.x, localmesh[meshnum].Color.y, localmesh[meshnum].Color.z)
