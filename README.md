@@ -5,3 +5,7 @@ It use swing to create window, and to draw inside it, here is also included a ob
 i added aabb colision, with some aditional code, you can even get some sort of physics
 ![Снимок экрана от 2022-10-22 17-10-59](https://user-images.githubusercontent.com/48290199/197343844-5efed97e-d7eb-4558-bf7c-d46885b30f7b.png)
 borders are calculated in 1 line using a function in mesh class
+i also added a simple alghoritm to partialy resolve the viewing porblem, some sort of Painter's algorithm, it order the meshes, not triangles, because of that object with a lot of triangles may look strange, but a scene with a lot of simple meshes, will look normaly, especially if enable backface culling
+![Снимок экрана от 2022-10-26 20-33-41](https://user-images.githubusercontent.com/48290199/198097035-e451a9e6-85e8-4e6a-92f3-affb487bf2fa.png)
+![Снимок экрана от 2022-10-26 20-33-51](https://user-images.githubusercontent.com/48290199/198097054-f406a10b-867a-45cc-bd58-bd1076a76e9d.png)
+Here is some images of how it works
