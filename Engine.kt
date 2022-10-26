@@ -1,4 +1,3 @@
-
 package Engine
 
 import javax.swing.JFrame
@@ -152,7 +151,7 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
                 }
                 toadd = i
             }
-            addto+=toadd
+            addto+=toadd+3
         }
     }
     public override fun paintComponent(g: Graphics) {
