@@ -1,3 +1,4 @@
+
 package Engine
 
 import javax.swing.JFrame
@@ -64,6 +65,8 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
             playerColision(localmesh)
         }
 
+        var geom: ArrayList<Vec3> = arrayListOf()
+
         var mousepos = MouseInfo.getPointerInfo()
 
         var r = Robot()
@@ -82,7 +85,6 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
         rotation.y += mspos.y.toFloat() / localsize.y * sensivity
 
         for(meshnum in localmesh.indices) {
-            g2d.paint = Color(localmesh[meshnum].Color.x, localmesh[meshnum].Color.y, localmesh[meshnum].Color.z)
             for (i in 0.. localmesh[meshnum].Geometry.size - 3 step 3) {
                 var vertex = Vec3()
                 var vertex2 = Vec3()
@@ -94,8 +96,8 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
 
                 proj.makeTranslateMat(position.Sub(localmesh[meshnum].MeshPosition))
                 vertex = proj.vecMultiply(localmesh[meshnum].Geometry[i])
-                vertex2 = proj.vecMultiply(localmesh[meshnum].Geometry[i + 1])
-                vertex3 = proj.vecMultiply(localmesh[meshnum].Geometry[i + 2])
+                vertex2 = proj.vecMultiply(localmesh[meshnum].Geometry[i+1])
+                vertex3 = proj.vecMultiply(localmesh[meshnum].Geometry[i+2])
 
                 proj.clearMat()
 
@@ -118,25 +120,39 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
                 vertex2 = proj.vecMultiply(vertex2)
                 vertex3 = proj.vecMultiply(vertex3)
 
+                geom.add(vertex)
+                geom.add(vertex2)
+                geom.add(vertex3)
+            }
+        }
+        var addto = 0
+        var toadd = 0
+        for(meshnum in localmesh.indices) {
+            g2d.paint = Color(localmesh[meshnum].Color.x, localmesh[meshnum].Color.y, localmesh[meshnum].Color.z)
+            for (i in 0..localmesh[meshnum].Geometry.size - 3 step 3) {
+                var vertex = geom[i+addto]
+                var vertex2 = geom[i+addto+1]
+                var vertex3 = geom[i+addto+2]
                 var isccw: Float = when(localmesh[meshnum].BackFaceCulling){
                     0 -> 1.0f
                     1 -> ccw(vertex, vertex2, vertex3)
                     2 -> -ccw(vertex, vertex2, vertex3)
                     else -> ccw(vertex, vertex2, vertex3)
                 }
-
                 if (vertex.z in 0.0f..1.0f && vertex2.z in 0.0f..1.0f && vertex3.z in 0.0f..1.0f && isccw > 0f) {
                     var toRender = coordToScreen(vertex, localsize)
                     var toRender1 = coordToScreen(vertex2, localsize)
                     var toRender2 = coordToScreen(vertex3, localsize)
                     var Mass1: Array<Int> = arrayOf(toRender.x, toRender1.x, toRender2.x)
                     var Mass2: Array<Int> = arrayOf(toRender.y, toRender1.y, toRender2.y)
-                    when(localmesh[meshnum].RenderWired){
+                    when (localmesh[meshnum].RenderWired) {
                         true -> g2d.drawPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
                         false -> g2d.fillPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
                     }
                 }
+                toadd = i
             }
+            addto+=toadd
         }
     }
     public override fun paintComponent(g: Graphics) {
