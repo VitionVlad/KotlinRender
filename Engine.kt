@@ -27,29 +27,12 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
     private var localsize = size
     private var mspos = IVec2()
     var lastPlayerPosition = Vec3()
-    fun meshOrdering(mesh: Array<Mesh>): Array<Mesh>{
-        var lcmesh = mesh
-        for(i in mesh.indices){
-            var pos = Vec3()
-            pos.x = -mesh[i].MeshPosition.x
-            pos.y = -mesh[i].MeshPosition.y
-            pos.z = -mesh[i].MeshPosition.z
-            var proj = Mat4()
-            proj.makeTranslateMat(position)
-            pos = proj.vecMultiply(pos)
-            proj.clearMat()
-            proj.makeYRotMat(-rotation.x)
-            pos = proj.vecMultiply(pos)
-            proj.clearMat()
-            proj.makeXRotMat(-rotation.y)
-            pos = proj.vecMultiply(pos)
-            proj.clearMat()
-            proj.makePerspectiveProj(fov, 100.0f, 0.1f)
-            pos = proj.vecMultiply(pos)
-            lcmesh[i].projectetPosition = pos
-        }
-        var finale = lcmesh.sortedByDescending { it.projectetPosition.z }
-        return finale.toTypedArray()
+    class Triangle{
+        var vertex1 = Vec3()
+        var vertex2 = Vec3()
+        var vertex3 = Vec3()
+        var center = Vec3()
+        var meshindex = 0
     }
     fun returnLocation(){
         position.x = lastPlayerPosition.x
@@ -87,36 +70,31 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
         rh[RenderingHints.KEY_RENDERING] = RenderingHints.VALUE_RENDER_QUALITY
         g2d.setRenderingHints(rh)
 
-        if(enableMeshColision){
+        if (enableMeshColision) {
             playerColision(localmesh)
         }
 
-        var geom: ArrayList<Vec3> = arrayListOf()
+        var geom: ArrayList<Triangle> = arrayListOf()
 
         var mousepos = MouseInfo.getPointerInfo()
 
         var r = Robot()
 
-        if(mspos.x != mousepos.location.x - localsize.x/2){
-            mspos.x = mousepos.location.x - localsize.x/2
-            r.mouseMove(localsize.x/2, localsize.y/2)
+        if (mspos.x != mousepos.location.x - localsize.x / 2) {
+            mspos.x = mousepos.location.x - localsize.x / 2
+            r.mouseMove(localsize.x / 2, localsize.y / 2)
         }
 
-        if(mspos.y != mousepos.location.y - localsize.y/2){
-            mspos.y = mousepos.location.y - localsize.y/2
-            r.mouseMove(localsize.x/2, localsize.y/2)
+        if (mspos.y != mousepos.location.y - localsize.y / 2) {
+            mspos.y = mousepos.location.y - localsize.y / 2
+            r.mouseMove(localsize.x / 2, localsize.y / 2)
         }
 
         rotation.x += -mspos.x.toFloat() / localsize.x * sensivity
         rotation.y += mspos.y.toFloat() / localsize.y * sensivity
 
-        if(enableMeshOrdering){
-            localmesh = meshOrdering(localmesh)
-        }
-
-        for(meshnum in localmesh.indices) {
-            g2d.paint = Color(localmesh[meshnum].Color.x, localmesh[meshnum].Color.y, localmesh[meshnum].Color.z)
-            for (i in 0.. localmesh[meshnum].Geometry.size - 3 step 3) {
+        for (meshnum in localmesh.indices) {
+            for (i in 0..localmesh[meshnum].Geometry.size - 3 step 3) {
                 var vertex = Vec3()
                 var vertex2 = Vec3()
                 var vertex3 = Vec3()
@@ -127,8 +105,8 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
 
                 proj.makeTranslateMat(position.Sub(localmesh[meshnum].MeshPosition))
                 vertex = proj.vecMultiply(localmesh[meshnum].Geometry[i])
-                vertex2 = proj.vecMultiply(localmesh[meshnum].Geometry[i+1])
-                vertex3 = proj.vecMultiply(localmesh[meshnum].Geometry[i+2])
+                vertex2 = proj.vecMultiply(localmesh[meshnum].Geometry[i + 1])
+                vertex3 = proj.vecMultiply(localmesh[meshnum].Geometry[i + 2])
 
                 proj.clearMat()
 
@@ -146,27 +124,47 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
 
                 proj.clearMat()
 
-                proj.makePerspectiveProj(fov, 100.0f, 0.1f)
+                proj.makePerspectiveProj(120.0f, 100.0f, 0.1f)
                 vertex = proj.vecMultiply(vertex)
                 vertex2 = proj.vecMultiply(vertex2)
                 vertex3 = proj.vecMultiply(vertex3)
 
-                var isccw: Float = when(localmesh[meshnum].BackFaceCulling){
-                    0 -> 1.0f
-                    1 -> ccw(vertex, vertex2, vertex3)
-                    2 -> -ccw(vertex, vertex2, vertex3)
-                    else -> ccw(vertex, vertex2, vertex3)
-                }
-                if (vertex.z in 0.0f..1.0f && vertex2.z in 0.0f..1.0f && vertex3.z in 0.0f..1.0f && isccw > 0f) {
-                    var toRender = coordToScreen(vertex, localsize)
-                    var toRender1 = coordToScreen(vertex2, localsize)
-                    var toRender2 = coordToScreen(vertex3, localsize)
-                    var Mass1: Array<Int> = arrayOf(toRender.x, toRender1.x, toRender2.x)
-                    var Mass2: Array<Int> = arrayOf(toRender.y, toRender1.y, toRender2.y)
-                    when (localmesh[meshnum].RenderWired) {
-                        true -> g2d.drawPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
-                        false -> g2d.fillPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
-                    }
+                var toadd = Triangle()
+
+                toadd.vertex1 = vertex
+                toadd.vertex2 = vertex2
+                toadd.vertex3 = vertex3
+
+                toadd.meshindex = meshnum
+
+                toadd.center.x = (vertex.x+vertex2.x+vertex3.x)/3
+                toadd.center.y = (vertex.y+vertex2.y+vertex3.y)/3
+                toadd.center.z = (vertex.z+vertex2.z+vertex3.z)/3
+
+                geom.add(toadd)
+            }
+        }
+        geom = ArrayList(geom.sortedByDescending { it.center.z })
+        for (i in geom.indices) {
+            g2d.paint = Color(localmesh[geom[i].meshindex].Color.x, localmesh[geom[i].meshindex].Color.y, localmesh[geom[i].meshindex].Color.z)
+            var vertex = geom[i].vertex1
+            var vertex2 = geom[i].vertex2
+            var vertex3 = geom[i].vertex3
+            var isccw: Float = when (localmesh[geom[i].meshindex].BackFaceCulling) {
+                0 -> 1.0f
+                1 -> ccw(vertex, vertex2, vertex3)
+                2 -> -ccw(vertex, vertex2, vertex3)
+                else -> ccw(vertex, vertex2, vertex3)
+            }
+            if (vertex.z in 0.0f..1.0f && vertex2.z in 0.0f..1.0f && vertex3.z in 0.0f..1.0f && isccw > 0f) {
+                var toRender = coordToScreen(vertex, localsize)
+                var toRender1 = coordToScreen(vertex2, localsize)
+                var toRender2 = coordToScreen(vertex3, localsize)
+                var Mass1: Array<Int> = arrayOf(toRender.x, toRender1.x, toRender2.x)
+                var Mass2: Array<Int> = arrayOf(toRender.y, toRender1.y, toRender2.y)
+                when (localmesh[geom[i].meshindex].RenderWired) {
+                    true -> g2d.drawPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
+                    false -> g2d.fillPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
                 }
             }
         }
