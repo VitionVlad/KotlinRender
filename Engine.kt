@@ -20,7 +20,11 @@ var enableMeshColision = true
 
 var fov = 120.0f
 
-var enableMeshOrdering = true
+var enablePaintersAlghortitm = true
+
+var enableMouseLook = true
+
+var hideCursor = true
 
 class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
     private var localmesh: Array<Mesh> = mesh
@@ -76,22 +80,24 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
 
         var geom: ArrayList<Triangle> = arrayListOf()
 
-        var mousepos = MouseInfo.getPointerInfo()
+        if(enableMouseLook){
+            var mousepos = MouseInfo.getPointerInfo()
 
-        var r = Robot()
+            var r = Robot()
 
-        if (mspos.x != mousepos.location.x - localsize.x / 2) {
-            mspos.x = mousepos.location.x - localsize.x / 2
-            r.mouseMove(localsize.x / 2, localsize.y / 2)
+            if (mspos.x != mousepos.location.x - localsize.x / 2) {
+                mspos.x = mousepos.location.x - localsize.x / 2
+                r.mouseMove(localsize.x / 2, localsize.y / 2)
+            }
+
+            if (mspos.y != mousepos.location.y - localsize.y / 2) {
+                mspos.y = mousepos.location.y - localsize.y / 2
+                r.mouseMove(localsize.x / 2, localsize.y / 2)
+            }
+
+            rotation.x += -mspos.x.toFloat() / localsize.x * sensivity
+            rotation.y += mspos.y.toFloat() / localsize.y * sensivity
         }
-
-        if (mspos.y != mousepos.location.y - localsize.y / 2) {
-            mspos.y = mousepos.location.y - localsize.y / 2
-            r.mouseMove(localsize.x / 2, localsize.y / 2)
-        }
-
-        rotation.x += -mspos.x.toFloat() / localsize.x * sensivity
-        rotation.y += mspos.y.toFloat() / localsize.y * sensivity
 
         for (meshnum in localmesh.indices) {
             for (i in 0..localmesh[meshnum].Geometry.size - 3 step 3) {
@@ -144,7 +150,9 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
                 geom.add(toadd)
             }
         }
-        geom = ArrayList(geom.sortedByDescending { it.center.z })
+        if(enablePaintersAlghortitm){
+            geom = ArrayList(geom.sortedByDescending { it.center.z })
+        }
         for (i in geom.indices) {
             g2d.paint = Color(localmesh[geom[i].meshindex].Color.x, localmesh[geom[i].meshindex].Color.y, localmesh[geom[i].meshindex].Color.z)
             var vertex = geom[i].vertex1
@@ -178,7 +186,11 @@ class Render(size: IVec2, mesh: Array<Mesh>): JPanel(){
         doDrawing(g)
         super.setFocusable(true)
         super.setFocusTraversalKeysEnabled(true)
-        super.setCursor(super.getToolkit().createCustomCursor(BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), Point(), "a"))
+        if(hideCursor){
+            super.setCursor(super.getToolkit().createCustomCursor(BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), Point(), "a"))
+        }else{
+            super.setCursor(Cursor(Cursor.DEFAULT_CURSOR))
+        }
     }
 }
 
