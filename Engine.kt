@@ -7,6 +7,7 @@ import javax.swing.JPanel
 import Engine.Math.*
 import Engine.Input.*
 import Engine.Geometry.*
+import kotlin.system.exitProcess
 
 var position = Vec3()
 
@@ -200,11 +201,15 @@ class Window(title: String, useOpenGL: String, size: IVec2, mesh: Array<Mesh>): 
         r.mouseMove(size.x/2, size.y/2)
         System.setProperty("sun.java2d.opengl", useOpenGL)
         createWindow(title, size, mesh)
+        while (!isActive){}
     }
     private fun createWindow(wtitle: String,  size: IVec2, mesh: Array<Mesh>){
         add(Render(size, mesh))
         title = wtitle
         isVisible = true
         setSize(size.x, size.y)
+    }
+    fun close(){
+        exitProcess(1)
     }
 }
