@@ -1,7 +1,6 @@
 package Engine.Input
 
-import Engine.position
-import Engine.rotation
+import Engine.Render.*
 import Engine.speed
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener

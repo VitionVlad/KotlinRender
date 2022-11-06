@@ -1,8 +1,7 @@
 import Engine.Math.*
 import Engine.Geometry.*
+import Engine.Render.*
 import Engine.*
-import kotlin.concurrent.thread
-import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
     position.z = -3.0f
@@ -21,6 +20,7 @@ fun main(args: Array<String>) {
     var window = Window("Kotlin Render", "true", size, mesh)
     while (window.isActive){
         mesh[1].PhysWork(mesh)
+        playerColision(mesh)
         Thread.sleep(10)
     }
     window.close()
