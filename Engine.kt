@@ -8,6 +8,7 @@ import Engine.Math.*
 import Engine.Input.*
 import Engine.Geometry.*
 import Engine.Render.*
+import javax.imageio.ImageIO
 import kotlin.system.exitProcess
 
 var speed = 0.00005f
@@ -82,6 +83,7 @@ class FrameBuffer(size: IVec2, mesh: Array<Mesh>): JPanel(){
     public override fun paintComponent(g: Graphics) {
         super.addKeyListener(keyWork())
         super.paintComponent(g)
+        super.setBackground(Color.BLACK)
         localsize.x = super.getSize().width
         localsize.y = super.getSize().height
         super.repaint()

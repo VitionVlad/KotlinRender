@@ -1,6 +1,8 @@
 package Engine.Input
 
 import Engine.Render.*
+import Engine.enableMouseLook
+import Engine.hideCursor
 import Engine.speed
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
@@ -32,6 +34,17 @@ class keyWork(): KeyListener {
         if(e.keyCode == 69){
             position.y -= speed
         }
+
+        if(e.keyCode == 27){
+            enableMouseLook = when(enableMouseLook){
+                false -> true
+                true -> false
+            }
+            hideCursor = when(hideCursor){
+                false -> true
+                true -> false
+            }
+        }
     }
     public override fun keyPressed(e: KeyEvent){
         if(e.keyCode == 87){
@@ -56,6 +69,17 @@ class keyWork(): KeyListener {
         }
         if(e.keyCode == 69){
             position.y -= speed
+        }
+
+        if(e.keyCode == 27){
+            enableMouseLook = when(enableMouseLook){
+                false -> true
+                true -> false
+            }
+            hideCursor = when(hideCursor){
+                false -> true
+                true -> false
+            }
         }
     }
     public override fun keyReleased(e: KeyEvent){}

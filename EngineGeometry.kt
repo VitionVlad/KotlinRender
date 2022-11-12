@@ -1,7 +1,6 @@
 package Engine.Geometry
 
-import Engine.Math.Ivec3
-import Engine.Math.Vec3
+import Engine.Math.*
 import Engine.Render.position
 import java.io.File
 import java.io.InputStream
@@ -11,6 +10,8 @@ import kotlin.math.abs
 
 var lastPlayerPosition = Vec3()
 
+var camSize = Vec2()
+
 fun returnLocation(){
     position.x = lastPlayerPosition.x
     position.y = lastPlayerPosition.y
@@ -19,7 +20,7 @@ fun returnLocation(){
 
 fun playerColision(mesh: Array<Mesh>){
     for(i in mesh.indices){
-        if(position.z in mesh[i].MeshPosition.z-mesh[i].Borders.z..mesh[i].MeshPosition.z+mesh[i].Borders.z && position.y in mesh[i].MeshPosition.y-mesh[i].Borders.y..mesh[i].MeshPosition.y+mesh[i].Borders.y && position.x in mesh[i].MeshPosition.x-mesh[i].Borders.x..mesh[i].MeshPosition.x+mesh[i].Borders.x){
+        if(position.z in mesh[i].MeshPosition.z-mesh[i].Borders.z-camSize.x..mesh[i].MeshPosition.z+mesh[i].Borders.z+camSize.x && position.y in mesh[i].MeshPosition.y-mesh[i].Borders.y-camSize.x..mesh[i].MeshPosition.y+mesh[i].Borders.y+camSize.y && position.x in mesh[i].MeshPosition.x-mesh[i].Borders.x-camSize.x..mesh[i].MeshPosition.x+mesh[i].Borders.x+camSize.x){
             returnLocation()
         }
     }

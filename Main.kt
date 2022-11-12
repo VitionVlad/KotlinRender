@@ -2,6 +2,7 @@ import Engine.Math.*
 import Engine.Geometry.*
 import Engine.Render.*
 import Engine.*
+import java.awt.Button
 
 fun main(args: Array<String>) {
     position.z = -3.0f
@@ -13,11 +14,15 @@ fun main(args: Array<String>) {
     mesh[1].MeshPosition.x = 0.5f
     mesh[0].calcBorders()
     mesh[1].calcBorders()
-    mesh[1].BackFaceCulling = 0
+    mesh[1].Color.x = 255
+    mesh[1].Color.y = 255
+    mesh[1].Color.z = 255
     var size = IVec2()
     size.x = 800
     size.y = 600
-    var window = Window("Kotlin Render", "true", size, mesh)
+    camSize.x = 0.2f
+    camSize.y = 1.7f
+    var window = Window("Render", "true", size, mesh)
     while (window.isActive){
         mesh[1].PhysWork(mesh)
         playerColision(mesh)

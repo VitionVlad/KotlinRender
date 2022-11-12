@@ -66,7 +66,7 @@ class EngineRender{
 
                 proj.clearMat()
 
-                proj.makePerspectiveProj(120.0f, 100.0f, 0.1f)
+                proj.makePerspectiveProj(120.0f, 100.0f, 0.0001f)
                 vertex = proj.vecMultiply(vertex)
                 vertex2 = proj.vecMultiply(vertex2)
                 vertex3 = proj.vecMultiply(vertex3)
