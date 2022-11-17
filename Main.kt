@@ -3,6 +3,8 @@ import Engine.Geometry.*
 import Engine.Render.*
 import Engine.*
 import java.awt.Button
+import java.awt.Frame
+import javax.swing.JFrame
 
 fun main(args: Array<String>) {
     position.z = -3.0f
@@ -25,7 +27,6 @@ fun main(args: Array<String>) {
     var window = Window("Render", "true", size, mesh)
     while (window.isActive){
         mesh[1].PhysWork(mesh)
-        playerColision(mesh)
         Thread.sleep(10)
     }
     window.close()

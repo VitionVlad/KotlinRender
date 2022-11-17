@@ -21,6 +21,8 @@ var hideCursor = true
 
 var renderComponent = EngineRender()
 
+var enablePlayerColision = true
+
 class FrameBuffer(size: IVec2, mesh: Array<Mesh>): JPanel(){
     private var localmesh: Array<Mesh> = mesh
     private var localsize = size
@@ -33,6 +35,10 @@ class FrameBuffer(size: IVec2, mesh: Array<Mesh>): JPanel(){
         )
         rh[RenderingHints.KEY_RENDERING] = RenderingHints.VALUE_RENDER_QUALITY
         g2d.setRenderingHints(rh)
+
+        if(enablePlayerColision){
+            playerColision(localmesh)
+        }
 
         if(enableMouseLook){
             var mousepos = MouseInfo.getPointerInfo()
@@ -78,6 +84,7 @@ class FrameBuffer(size: IVec2, mesh: Array<Mesh>): JPanel(){
                     false -> g2d.fillPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
                 }
             }
+
         }
     }
     public override fun paintComponent(g: Graphics) {
