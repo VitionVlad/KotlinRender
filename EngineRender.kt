@@ -52,14 +52,14 @@ class EngineRender{
 
                 proj.clearMat()
 
-                proj.makeYRotMat(-rotation.x)
+                proj.makeYRotMat(-rotation.x+localmesh[meshnum].rotation.x)
                 vertex = proj.vecMultiply(vertex)
                 vertex2 = proj.vecMultiply(vertex2)
                 vertex3 = proj.vecMultiply(vertex3)
 
                 proj.clearMat()
 
-                proj.makeXRotMat(-rotation.y)
+                proj.makeXRotMat(-rotation.y+localmesh[meshnum].rotation.y)
                 vertex = proj.vecMultiply(vertex)
                 vertex2 = proj.vecMultiply(vertex2)
                 vertex3 = proj.vecMultiply(vertex3)

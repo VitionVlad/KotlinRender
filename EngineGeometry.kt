@@ -18,17 +18,6 @@ fun returnLocation(){
     position.z = lastPlayerPosition.z
 }
 
-fun playerColision(mesh: Array<Mesh>){
-    for(i in mesh.indices){
-        if(position.z in mesh[i].MeshPosition.z-mesh[i].Borders.z-camSize.x..mesh[i].MeshPosition.z+mesh[i].Borders.z+camSize.x && position.y in mesh[i].MeshPosition.y-mesh[i].Borders.y-camSize.x..mesh[i].MeshPosition.y+mesh[i].Borders.y+camSize.y && position.x in mesh[i].MeshPosition.x-mesh[i].Borders.x-camSize.x..mesh[i].MeshPosition.x+mesh[i].Borders.x+camSize.x){
-            returnLocation()
-        }
-    }
-    lastPlayerPosition.x = position.x.toFloat()
-    lastPlayerPosition.y = position.y.toFloat()
-    lastPlayerPosition.z = position.z.toFloat()
-}
-
 class Mesh{
     var Geometry: Array<Vec3> = emptyArray()
     var MeshPosition = Vec3()
@@ -37,7 +26,9 @@ class Mesh{
     var BackFaceCulling: Int = 1
     var Borders = Vec3()
     var mass = 0.01f
+    var rotation = Vec2()
     private var localPos = Vec3()
+    var allowInteract = true
     fun calcBorders(){
         var max = Vec3()
         for(i in 0..Geometry.size-3){
@@ -54,7 +45,7 @@ class Mesh{
         Borders = max
     }
     fun meshMeshIntersection(m1: Mesh){
-        if((m1.MeshPosition.x + m1.Borders.x >= MeshPosition.x - Borders.x || m1.MeshPosition.x - m1.Borders.x >= MeshPosition.x + Borders.x)&&(m1.MeshPosition.y + m1.Borders.y >= MeshPosition.y - Borders.y || m1.MeshPosition.y - m1.Borders.y >= MeshPosition.y + Borders.y)&&(m1.MeshPosition.z + m1.Borders.z >= MeshPosition.z - Borders.z || m1.MeshPosition.z - m1.Borders.z >= MeshPosition.z + Borders.z)){
+        if((m1.MeshPosition.x + m1.Borders.x >= MeshPosition.x - Borders.x || m1.MeshPosition.x - m1.Borders.x >= MeshPosition.x + Borders.x)&&(m1.MeshPosition.y + m1.Borders.y >= MeshPosition.y - Borders.y || m1.MeshPosition.y - m1.Borders.y >= MeshPosition.y + Borders.y)&&(m1.MeshPosition.z + m1.Borders.z >= MeshPosition.z - Borders.z || m1.MeshPosition.z - m1.Borders.z >= MeshPosition.z + Borders.z)&&m1.allowInteract){
             MeshPosition.x = localPos.x
             MeshPosition.y = localPos.y
             MeshPosition.z = localPos.z
@@ -109,4 +100,15 @@ class ObjReader{
         Export.Geometry = finalvertexlist.toTypedArray()
         return Export
     }
+}
+
+fun playerColision(mesh: Array<Mesh>){
+    for(i in mesh.indices){
+        if(position.z in mesh[i].MeshPosition.z-mesh[i].Borders.z-camSize.x..mesh[i].MeshPosition.z+mesh[i].Borders.z+camSize.x && position.y in mesh[i].MeshPosition.y-mesh[i].Borders.y-camSize.x..mesh[i].MeshPosition.y+mesh[i].Borders.y+camSize.y && position.x in mesh[i].MeshPosition.x-mesh[i].Borders.x-camSize.x..mesh[i].MeshPosition.x+mesh[i].Borders.x+camSize.x&&mesh[i].allowInteract){
+            returnLocation()
+        }
+    }
+    lastPlayerPosition.x = position.x.toFloat()
+    lastPlayerPosition.y = position.y.toFloat()
+    lastPlayerPosition.z = position.z.toFloat()
 }
