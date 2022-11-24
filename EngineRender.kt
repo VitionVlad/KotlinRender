@@ -19,6 +19,7 @@ class EngineRender{
         var vertex3 = Vec3()
         var center = Vec3()
         var meshindex = 0
+         var allowrender: Boolean = false
     }
     fun coordToScreen(coord: Vec3, size: IVec2): IVec2{
         var convert = Vec2()
@@ -82,6 +83,14 @@ class EngineRender{
                 toadd.center.x = (vertex.x+vertex2.x+vertex3.x)/3
                 toadd.center.y = (vertex.y+vertex2.y+vertex3.y)/3
                 toadd.center.z = (vertex.z+vertex2.z+vertex3.z)/3
+
+                var isccw: Float = when (localmesh[meshnum].BackFaceCulling) {
+                    0 -> 1.0f
+                    1 -> renderComponent.ccw(toadd.vertex1, toadd.vertex2, toadd.vertex3)
+                    2 -> -renderComponent.ccw(toadd.vertex1, toadd.vertex2, toadd.vertex3)
+                    else -> renderComponent.ccw(toadd.vertex1, toadd.vertex2, toadd.vertex3)
+                }
+                toadd.allowrender = toadd.vertex1.z in 0.0f..1.0f && toadd.vertex2.z in 0.0f..1.0f && toadd.vertex3.z in 0.0f..1.0f && isccw > 0f
 
                 geom.add(toadd)
             }
