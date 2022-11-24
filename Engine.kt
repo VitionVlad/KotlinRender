@@ -67,13 +67,7 @@ class FrameBuffer(size: IVec2, mesh: Array<Mesh>): JPanel(){
             var vertex = geom[i].vertex1
             var vertex2 = geom[i].vertex2
             var vertex3 = geom[i].vertex3
-            var isccw: Float = when (localmesh[geom[i].meshindex].BackFaceCulling) {
-                0 -> 1.0f
-                1 -> renderComponent.ccw(vertex, vertex2, vertex3)
-                2 -> -renderComponent.ccw(vertex, vertex2, vertex3)
-                else -> renderComponent.ccw(vertex, vertex2, vertex3)
-            }
-            if (vertex.z in 0.0f..1.0f && vertex2.z in 0.0f..1.0f && vertex3.z in 0.0f..1.0f && isccw > 0f) {
+            if (geom[i].allowrender) {
                 var toRender = renderComponent.coordToScreen(vertex, localsize)
                 var toRender1 = renderComponent.coordToScreen(vertex2, localsize)
                 var toRender2 = renderComponent.coordToScreen(vertex3, localsize)
@@ -84,7 +78,6 @@ class FrameBuffer(size: IVec2, mesh: Array<Mesh>): JPanel(){
                     false -> g2d.fillPolygon(Mass1.toIntArray(), Mass2.toIntArray(), 3)
                 }
             }
-
         }
     }
     public override fun paintComponent(g: Graphics) {
