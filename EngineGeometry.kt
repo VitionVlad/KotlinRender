@@ -12,12 +12,6 @@ var lastPlayerPosition = Vec3()
 
 var camSize = Vec2()
 
-fun returnLocation(){
-    position.x = lastPlayerPosition.x
-    position.y = lastPlayerPosition.y
-    position.z = lastPlayerPosition.z
-}
-
 class Mesh{
     var Geometry: Array<Vec3> = emptyArray()
     var MeshPosition = Vec3()
@@ -105,7 +99,11 @@ class ObjReader{
 fun playerColision(mesh: Array<Mesh>){
     for(i in mesh.indices){
         if(position.z in mesh[i].MeshPosition.z-mesh[i].Borders.z-camSize.x..mesh[i].MeshPosition.z+mesh[i].Borders.z+camSize.x && position.y in mesh[i].MeshPosition.y-mesh[i].Borders.y-camSize.x..mesh[i].MeshPosition.y+mesh[i].Borders.y+camSize.y && position.x in mesh[i].MeshPosition.x-mesh[i].Borders.x-camSize.x..mesh[i].MeshPosition.x+mesh[i].Borders.x+camSize.x&&mesh[i].allowInteract){
-            returnLocation()
+            position.y = lastPlayerPosition.y
+            if(position.y < mesh[i].MeshPosition.y+mesh[i].Borders.y+camSize.y/2){
+                position.x = lastPlayerPosition.x
+                position.z = lastPlayerPosition.z
+            }
         }
     }
     lastPlayerPosition.x = position.x.toFloat()
