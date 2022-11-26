@@ -39,7 +39,7 @@ class Mesh{
         Borders = max
     }
     fun meshMeshIntersection(m1: Mesh){
-        if((m1.MeshPosition.x + m1.Borders.x >= MeshPosition.x - Borders.x || m1.MeshPosition.x - m1.Borders.x >= MeshPosition.x + Borders.x)&&(m1.MeshPosition.y + m1.Borders.y >= MeshPosition.y - Borders.y || m1.MeshPosition.y - m1.Borders.y >= MeshPosition.y + Borders.y)&&(m1.MeshPosition.z + m1.Borders.z >= MeshPosition.z - Borders.z || m1.MeshPosition.z - m1.Borders.z >= MeshPosition.z + Borders.z)&&m1.allowInteract){
+        if((m1.MeshPosition.x + m1.Borders.x >= MeshPosition.x - Borders.x || m1.MeshPosition.x - m1.Borders.x >= MeshPosition.x + Borders.x)&&(m1.MeshPosition.y + m1.Borders.y >= MeshPosition.y - Borders.y || m1.MeshPosition.y - m1.Borders.y >= MeshPosition.y + Borders.y)&&(m1.MeshPosition.z + m1.Borders.z >= MeshPosition.z - Borders.z || m1.MeshPosition.z - m1.Borders.z >= MeshPosition.z + Borders.z)){
             MeshPosition.x = localPos.x
             MeshPosition.y = localPos.y
             MeshPosition.z = localPos.z
@@ -51,7 +51,9 @@ class Mesh{
     fun PhysWork(interact: Array<Mesh>){
         MeshPosition.y -= mass
         for(i in interact.indices){
-            meshMeshIntersection(interact[i])
+            if(interact[i].allowInteract){
+                meshMeshIntersection(interact[i])
+            }
         }
     }
 }
