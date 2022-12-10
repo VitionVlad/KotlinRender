@@ -5,10 +5,15 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.tan
 
-class Vec3{
+class Vec3(){
     var x: Float = 0.0f
     var y: Float = 0.0f
     var z: Float = 0.0f
+    constructor(x: Float, y: Float, z: Float) : this() {
+        this.x = x
+        this.y = y
+        this.z = z
+    }
     fun Sum(a: Vec3): Vec3{
         var rs = Vec3()
         rs.x = x + a.x
@@ -25,20 +30,33 @@ class Vec3{
     }
 }
 
-class Ivec3{
+class Ivec3(){
     var x: Int = 0
     var y: Int = 0
     var z: Int = 0
+    constructor(x: Int, y: Int, z: Int): this(){
+        this.x = x
+        this.y = y
+        this.z = z
+    }
 }
 
-class Vec2{
+class Vec2(){
     var x: Float = 0.0f
     var y: Float = 0.0f
+    constructor(x: Float, y: Float): this(){
+        this.x = x
+        this.y = y
+    }
 }
 
-class IVec2{
+class IVec2(){
     var x: Int = 0
     var y: Int = 0
+    constructor(x: Int, y: Int): this(){
+        this.x = x
+        this.y = y
+    }
 }
 
 class Mat4{
